@@ -2,7 +2,7 @@ from os import getcwd
 from PyQt5.QtWidgets import QMainWindow, QMdiSubWindow, QLabel
 from PyQt5.uic import loadUiType
 from PyQt5.QtGui import QIcon, QBrush, QImage
-import sys
+import sys.getsizeof()
 
 main_class = loadUiType(getcwd() + '/ui/main_window.ui')[0]
 
