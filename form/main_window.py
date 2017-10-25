@@ -2,7 +2,7 @@ from os import getcwd
 from PyQt5.QtWidgets import QMainWindow, QMdiSubWindow
 from PyQt5.uic import loadUiType
 from PyQt5.QtGui import QIcon
-from form import country
+from form import country, shipping
 
 main_class = loadUiType(getcwd() + '/ui/main_window.ui')[0]
 
@@ -22,3 +22,11 @@ class MainWindow(QMainWindow, main_class):
         self.mdi.addSubWindow(self.sub_country)
         self.sub_country.resize(self.country.size())
         self.sub_country.show()
+
+    def ui_view_shipping_method(self):
+        self.shipping_method = shipping.ShippingMethodList()
+        self.sub_shipping_method = QMdiSubWindow()
+        self.sub_shipping_method.setWidget(self.shipping_method)
+        self.mdi.addSubWindow(self.sub_shipping_method)
+        self.sub_shipping_method.resize(self.shipping_method.size())
+        self.sub_shipping_method.show()

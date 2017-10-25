@@ -1,17 +1,18 @@
 from form.templates import list
-from my_class.orm import Country
-
-COLOR_WINDOW = "255, 255, 51"
+from my_class.orm import ShippingMethod
 
 
-class CountryList(list.ListItems):
+COLOR_WINDOW = "204, 102, 0"
+
+
+class ShippingMethodList(list.ListItems):
     def set_settings(self):
-        self.setWindowTitle("Страны")  # Имя окна
+        self.setWindowTitle("Способы доставки")  # Имя окна
         self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW)  # Цвет бара
 
-        self.item = Country
+        self.item = ShippingMethod
 
-        self.set_new_win = {"WinTitle": "Страна",
+        self.set_new_win = {"WinTitle": "Способ доставки",
                             "WinColor": "(%s)" % COLOR_WINDOW,
                             "lb_name": "Название",
                             "lb_note": "Заметка"}

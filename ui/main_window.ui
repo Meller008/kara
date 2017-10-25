@@ -45,7 +45,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <property name="usesScrollButtons">
        <bool>true</bool>
@@ -246,8 +246,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_view_shipping_method()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>185</x>
+     <y>38</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>192</x>
+     <y>-31</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ui_view_country()</slot>
+  <slot>ui_view_shipping_method()</slot>
  </slots>
 </ui>
