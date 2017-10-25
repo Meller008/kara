@@ -100,7 +100,6 @@ class ListItems(QMainWindow, list_class):
         if not self.dc_select:
             self.ui_change_item(select_prov.data(5))
         else:
-            item = self.ui_change_item(select_prov.data(5))
-            self.m_class.of_list_select(item)
+            self.m_class.of_list_select(select_prov.data(5))
             self.close()
             self.destroy()

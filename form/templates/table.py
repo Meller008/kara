@@ -1,16 +1,19 @@
 from os import getcwd
+from decimal import Decimal
+from datetime import date
+import re
 from PyQt5.uic import loadUiType
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QMainWindow, QFileDialog
 from PyQt5.QtGui import QIcon
-from function import my_sql, to_excel, table_to_html
-from classes import print_qt
-from decimal import Decimal
-import datetime
-import re
-from classes.my_class import User
+from function import to_excel, table_to_html
+from my_class import print_qt, orm_class
+from pony.orm import *
 
 
-table_list_class = loadUiType(getcwd() + '/ui/templates ui/table.ui')[0]
+table_list_class = loadUiType(getcwd() + '/ui/templates ui/table/table.ui')[0]
+
+
+COLOR_WINDOW = "255, 255, 255"
 
 
 class TableList(QMainWindow, table_list_class):
@@ -18,47 +21,29 @@ class TableList(QMainWindow, table_list_class):
         super(TableList, self).__init__()
         self.setupUi(self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
+
         self.main = main_class
         self.dc_select = dc_select
         self.other_value = other
+
         self.set_settings()
         self.set_table_header()
         self.set_table_info()
-        self.access()
-
-    def access(self):
-        for item in User().access_list(self.__class__.__name__):
-            a = getattr(self, item["atr1"])
-            if item["atr2"]:
-                a = getattr(a, item["atr2"])
-
-            if item["value"]:
-                if item["value"] == "True":
-                    val = True
-                elif item["value"] == "False":
-                    val = False
-                else:
-                    try:
-                        val = int(item["value"])
-                    except:
-                        val = item["value"]
-                a(val)
-            else:
-                a()
 
     def set_settings(self):
         self.setWindowTitle("Список")  # Имя окна
         self.resize(720, 270)
-        self.toolBar.setStyleSheet("background-color: rgb(255, 255, 255);")  # Цвет бара
+        self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW)  # Цвет бара
 
         # Названия колонк (Имя, Длинна)
-        self.table_header_name = (("1", 120), ("2", 170), ("3", 70), ("4", 70), ("5", 50))
+        self.table_header_name = (("Название", 120), ("Почта", 170), ("Сайт", 170))
 
-        #  нулевой элемент должен быть ID
-        self.query_table_select = """SELECT `order`.Id, clients.Name, clients_actual_address.Name, `order`.Date_Order, `order`.Date_Shipment, `order`.Number_Doc,
-                                      FORMAT(1254125.25, 4), `order`.Note FROM `order` LEFT JOIN clients ON `order`.Client_Id = clients.Id
-                                      LEFT JOIN clients_actual_address ON `order`.Clients_Adress_Id = clients_actual_address.Id"""
-        self.query_table_dell = "DELETE FROM `order` WHERE Id = %s"
+        self.item = orm_class.Vendor  # Класс который будем выводить! Без скобок!
+
+        # сам запрос
+        self.query = select((v.id, v.name, v.mail, v.site) for v in orm_class.Vendor)
+
+        # сам запрос
 
     def set_table_header(self):
         i = 0
@@ -69,24 +54,20 @@ class TableList(QMainWindow, table_list_class):
             self.table_widget.horizontalHeader().resizeSection(i, int(headet_item[1]))
             i += 1
 
+    @db_session
     def set_table_info(self):
-        self.table_items = my_sql.sql_select(self.query_table_select)
-        if "mysql.connector.errors" in str(type(self.table_items)):
-                QMessageBox.critical(self, "Ошибка sql получение таблицы", self.table_items.msg, QMessageBox.Ok)
-                return False
 
         self.table_widget.clearContents()
         self.table_widget.setRowCount(0)
 
-        if not self.table_items:
-            return False
+        list_table_item = self.query[:]
 
-        for table_typle in self.table_items:
+        for table_typle in list_table_item:
             self.table_widget.insertRow(self.table_widget.rowCount())
             for column in range(1, len(table_typle)):
                 if isinstance(table_typle[column], Decimal):
                     text = re.sub(r'(?<=\d)(?=(\d\d\d)+\b.)', ' ', str(table_typle[column]))
-                elif isinstance(table_typle[column], datetime.date):
+                elif isinstance(table_typle[column], date):
                     text = table_typle[column].strftime("%d.%m.%Y")
                 else:
                     text = str(table_typle[column])
@@ -105,7 +86,7 @@ class TableList(QMainWindow, table_list_class):
             try:
                 item_id = self.table_widget.selectedItems()[0].data(5)
             except:
-                QMessageBox.critical(self, "Ошибка ", "Выделите элемент который хотите изменить", QMessageBox.Ok)
+                QMessageBox.information(self, "Ошибка ", "Выделите элемент который хотите изменить", QMessageBox.Ok)
                 return False
 
         pass
@@ -121,19 +102,20 @@ class TableList(QMainWindow, table_list_class):
             self.destroy()
 
     def ui_dell_table_item(self):
-        result = QMessageBox.question(self, "Удаление", "Точно удалить элемент?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-        if result == 16384:
-            try:
-                id_item = self.table_widget.selectedItems()
-            except:
-                QMessageBox.critical(self, "Ошибка Удаления", "Выделите элемент который хотите удалить", QMessageBox.Ok)
-                return False
-            for id in id_item:
-                sql_info = my_sql.sql_change(self.query_table_dell, (id.data(5), ))
-                if "mysql.connector.errors" in str(type(sql_info)):
-                    QMessageBox.critical(self, "Ошибка sql удаления элемента таблицы", sql_info.msg, QMessageBox.Ok)
-                    return False
-        self.set_table_info()
+        pass
+        # result = QMessageBox.question(self, "Удаление", "Точно удалить элемент?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        # if result == 16384:
+        #     try:
+        #         id_item = self.table_widget.selectedItems()
+        #     except:
+        #         QMessageBox.critical(self, "Ошибка Удаления", "Выделите элемент который хотите удалить", QMessageBox.Ok)
+        #         return False
+        #     for id in id_item:
+        #         sql_info = my_sql.sql_change(self.query_table_dell, (id.data(5), ))
+        #         if "mysql.connector.errors" in str(type(sql_info)):
+        #             QMessageBox.critical(self, "Ошибка sql удаления элемента таблицы", sql_info.msg, QMessageBox.Ok)
+        #             return False
+        # self.set_table_info()
 
     def ui_update(self):
         self.table_widget.setSortingEnabled(False)

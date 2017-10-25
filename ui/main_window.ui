@@ -278,10 +278,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_6</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_view_vendor()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>116</x>
+     <y>34</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>119</x>
+     <y>-58</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ui_view_country()</slot>
   <slot>ui_view_shipping_method()</slot>
   <slot>ui_view_payment_method()</slot>
+  <slot>ui_view_vendor()</slot>
  </slots>
 </ui>

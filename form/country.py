@@ -1,5 +1,5 @@
 from form.templates import list
-from my_class.orm import Country
+from my_class.orm_class import Country
 
 COLOR_WINDOW = "255, 255, 51"
 
