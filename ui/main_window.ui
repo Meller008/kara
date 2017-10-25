@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Kara</string>
+   <string>KaRa</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -45,7 +45,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <property name="usesScrollButtons">
        <bool>true</bool>
@@ -262,9 +262,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_view_payment_method()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>115</x>
+     <y>33</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>124</x>
+     <y>-87</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ui_view_country()</slot>
   <slot>ui_view_shipping_method()</slot>
+  <slot>ui_view_payment_method()</slot>
  </slots>
 </ui>

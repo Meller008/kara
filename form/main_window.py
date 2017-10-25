@@ -2,7 +2,7 @@ from os import getcwd
 from PyQt5.QtWidgets import QMainWindow, QMdiSubWindow
 from PyQt5.uic import loadUiType
 from PyQt5.QtGui import QIcon
-from form import country, shipping
+from form import country, shipping, payment
 
 main_class = loadUiType(getcwd() + '/ui/main_window.ui')[0]
 
@@ -30,3 +30,11 @@ class MainWindow(QMainWindow, main_class):
         self.mdi.addSubWindow(self.sub_shipping_method)
         self.sub_shipping_method.resize(self.shipping_method.size())
         self.sub_shipping_method.show()
+
+    def ui_view_payment_method(self):
+        self.Payment_method = payment.PaymentMethodList()
+        self.sub_Payment_method = QMdiSubWindow()
+        self.sub_Payment_method.setWidget(self.Payment_method)
+        self.mdi.addSubWindow(self.sub_Payment_method)
+        self.sub_Payment_method.resize(self.Payment_method.size())
+        self.sub_Payment_method.show()
