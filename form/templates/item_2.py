@@ -2,7 +2,7 @@ from os import getcwd
 from PyQt5.uic import loadUiType
 from PyQt5.QtWidgets import QDialog
 
-item_2 = loadUiType(getcwd() + '/ui/templates ui/item_2.ui')[0]
+item_2 = loadUiType(getcwd() + '/ui/templates ui/list/item_2.ui')[0]
 
 
 class Item2(QDialog, item_2):

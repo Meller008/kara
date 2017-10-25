@@ -2,6 +2,7 @@ from pony.orm import *
 
 
 db = Database()
+db.bind(provider='mysql', host='192.168.1.24', user='kara', passwd='Aa088011', db='kara')
 
 
 class Country(db.Entity):
@@ -36,3 +37,7 @@ class Vendor(db.Entity):
     note = Optional(str)
     phone = Optional(str)
     site = Optional(str)
+
+
+sql_debug(True)
+db.generate_mapping(create_tables=True, check_tables=True)

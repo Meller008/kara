@@ -212,7 +212,7 @@
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QMdiArea" name="mdiArea">
+     <widget class="QMdiArea" name="mdi">
       <property name="background">
        <brush brushstyle="SolidPattern">
         <color alpha="255">
