@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QStyleFactory
 import sys, traceback, time
 import form.main_window
 from datetime import datetime
@@ -16,6 +16,7 @@ sys.excepthook = ex
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    app.setStyle(QStyleFactory().create("fusion"))
     main = form.main_window.MainWindow()
     sys.exit(app.exec_())
 

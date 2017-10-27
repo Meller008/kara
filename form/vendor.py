@@ -67,6 +67,8 @@ class VendorBrows(QDialog, vendor_class):
         self.main = main
         self.id = ven_id
         self.vendor_class = None
+        self.del_shipping = []
+        self.del_payment = []
 
         self.set_tart_settings()
 
@@ -75,12 +77,22 @@ class VendorBrows(QDialog, vendor_class):
 
         if self.id:
             self.vendor_class = Vendor[int(self.id)]
-            self.le_name.setText(self.vendor_class.name),
-            self.le_full_name.setText(self.vendor_class.full_name),
-            self.le_mail.setText(self.vendor_class.mail),
-            self.le_note.setText(self.vendor_class.note),
-            self.le_phone.setText(self.vendor_class.phone),
-            self.le_site.setText(self.vendor_class.site),
+            self.le_name.setText(self.vendor_class.name)
+            self.le_full_name.setText(self.vendor_class.full_name)
+            self.le_mail.setText(self.vendor_class.mail)
+            self.le_note.setText(self.vendor_class.note)
+            self.le_phone.setText(self.vendor_class.phone)
+            self.le_site.setText(self.vendor_class.site)
+
+            for ship in self.vendor_class.shipping_methods:
+                item = QListWidgetItem(ship.name)
+                item.setData(5, ship.id)
+                self.lw_shipping.addItem(item)
+
+            for pay in self.vendor_class.payment_methods:
+                item = QListWidgetItem(pay.name)
+                item.setData(5, pay.id)
+                self.lw_payment.addItem(item)
 
         else:
             pass
@@ -88,6 +100,8 @@ class VendorBrows(QDialog, vendor_class):
         # Вставим страны
         for c in select(c for c in Country):
             self.cb_country.addItem(c.name, c.id)
+
+        self.cb_country.setCurrentText(self.vendor_class.country.name)
 
     def ui_add_payment(self):
         self.pay_win = payment.PaymentMethodList(self, True)
@@ -105,6 +119,7 @@ class VendorBrows(QDialog, vendor_class):
             QMessageBox.information(self, "Ошибка ", "Выделите способ который надо удалить", QMessageBox.Ok)
             return False
 
+        self.del_payment.append(self.lw_payment.item(row).data(5))
         self.lw_payment.takeItem(row)
 
     def ui_del_shipping(self):
@@ -113,6 +128,7 @@ class VendorBrows(QDialog, vendor_class):
             QMessageBox.information(self, "Ошибка ", "Выделите способ который надо удалить", QMessageBox.Ok)
             return False
 
+        self.del_shipping.append(self.lw_shipping.item(row).data(5))
         self.lw_shipping.takeItem(row)
 
     @db_session
@@ -128,13 +144,21 @@ class VendorBrows(QDialog, vendor_class):
                 "country": self.cb_country.currentData()
                 }
 
-        if self.vendor_class:
-            self.vendor_class(**value)
+        if self.id:
+            v = Vendor[self.id]
         else:
-            v = Vendor(**value)
+            v = Vendor()
+
+        v.set(**value)
+
+        v.shipping_methods.remove(map(lambda x: ShippingMethod[x], self.del_shipping))
+        v.payment_methods.remove(map(lambda x: PaymentMethod[x], self.del_payment))
 
         for row in range(self.lw_shipping.count()):
             v.shipping_methods.add(ShippingMethod[self.lw_shipping.item(row).data(5)])
+
+        for row in range(self.lw_payment.count()):
+            v.payment_methods.add(PaymentMethod[self.lw_payment.item(row).data(5)])
 
         self.close()
         self.destroy()
