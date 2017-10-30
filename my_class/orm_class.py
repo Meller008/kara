@@ -39,5 +39,27 @@ class Vendor(db.Entity):
     payment_methods = Set(PaymentMethod)
 
 
+class SewingMachine(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    name = Required(str)
+    note = Optional(str)
+    manufacturer_sewing_machine = Required('ManufacturerSewingMachine')
+    type_sewing_machines = Set('TypeSewingMachine')
+
+
+class ManufacturerSewingMachine(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    name = Required(str)
+    note = Optional(str)
+    sewing_machines = Set(SewingMachine)
+
+
+class TypeSewingMachine(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    name = Required(str)
+    note = Optional(str)
+    sewing_machines = Set(SewingMachine)
+
+
 sql_debug(True)
 db.generate_mapping(create_tables=True, check_tables=True)
