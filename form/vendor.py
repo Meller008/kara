@@ -1,10 +1,7 @@
 from os import getcwd
-import re
-from datetime import date
-from decimal import Decimal
 from PyQt5.uic import loadUiType
-from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QDialog, QListWidgetItem
-from PyQt5.QtGui import QBrush, QColor, QIcon
+from PyQt5.QtWidgets import QMessageBox, QDialog, QListWidgetItem
+from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from form.templates import table
 from form import payment, shipping
@@ -56,6 +53,15 @@ class VendorList(table.TableList):
         self.vendor_window.setModal(True)
         self.vendor_window.show()
 
+    def ui_double_click_table_item(self, item):  # Двойной клик по элементу
+        if not self.dc_select:
+            self.ui_change_table_item(item.data(5))
+        else:
+            # что хотим получить ставим всместо 0
+            self.main.of_select_vendor(item.data(5))
+            self.close()
+            self.destroy()
+
 
 class VendorBrows(QDialog, vendor_class):
     def __init__(self, main=None, ven_id=None):
@@ -66,7 +72,6 @@ class VendorBrows(QDialog, vendor_class):
 
         self.main = main
         self.id = ven_id
-        self.vendor_class = None
         self.del_shipping = []
         self.del_payment = []
 
@@ -74,6 +79,9 @@ class VendorBrows(QDialog, vendor_class):
 
     @db_session
     def set_tart_settings(self):
+        # Вставим страны
+        for c in select(c for c in Country):
+            self.cb_country.addItem(c.name, c.id)
 
         if self.id:
             self.vendor_class = Vendor[int(self.id)]
@@ -83,6 +91,7 @@ class VendorBrows(QDialog, vendor_class):
             self.le_note.setText(self.vendor_class.note)
             self.le_phone.setText(self.vendor_class.phone)
             self.le_site.setText(self.vendor_class.site)
+            self.cb_country.setCurrentText(self.vendor_class.country.name)
 
             for ship in self.vendor_class.shipping_methods:
                 item = QListWidgetItem(ship.name)
@@ -96,12 +105,6 @@ class VendorBrows(QDialog, vendor_class):
 
         else:
             pass
-
-        # Вставим страны
-        for c in select(c for c in Country):
-            self.cb_country.addItem(c.name, c.id)
-
-        self.cb_country.setCurrentText(self.vendor_class.country.name)
 
     def ui_add_payment(self):
         self.pay_win = payment.PaymentMethodList(self, True)
@@ -146,10 +149,9 @@ class VendorBrows(QDialog, vendor_class):
 
         if self.id:
             v = Vendor[self.id]
+            v.set(**value)
         else:
-            v = Vendor()
-
-        v.set(**value)
+            v = Vendor(**value)
 
         v.shipping_methods.remove(map(lambda x: ShippingMethod[x], self.del_shipping))
         v.payment_methods.remove(map(lambda x: PaymentMethod[x], self.del_payment))

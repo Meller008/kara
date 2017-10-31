@@ -64,4 +64,9 @@ class MainWindow(QMainWindow, main_class):
         self.sub_type_machine.show()
 
     def ui_view_sewing_machine(self):
-        pass
+        self.sewing_machine = sewing_machine.SewingMachineList()
+        self.sub_sewing_machine = QMdiSubWindow()
+        self.sub_sewing_machine.setWidget(self.sewing_machine)
+        self.mdi.addSubWindow(self.sub_sewing_machine)
+        self.sub_sewing_machine.resize(self.sewing_machine.size())
+        self.sub_sewing_machine.show()

@@ -43,8 +43,8 @@ class SewingMachine(db.Entity):
     id = PrimaryKey(int, auto=True)
     name = Required(str)
     note = Optional(str)
-    manufacturer_sewing_machine = Required('ManufacturerSewingMachine')
-    type_sewing_machines = Set('TypeSewingMachine')
+    manufacturer = Required('ManufacturerSewingMachine')
+    type = Set('TypeSewingMachine')
 
 
 class ManufacturerSewingMachine(db.Entity):
