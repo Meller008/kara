@@ -1,14 +1,19 @@
 from os import getcwd
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QDialog, QMessageBox, QTableWidgetItem, QMainWindow, QTreeWidgetItem, QFileDialog
+from PyQt5.QtWidgets import QDialog, QMessageBox, QTableWidgetItem, QMainWindow, QTreeWidgetItem, QFileDialog, QTreeWidgetItem
 from PyQt5.uic import loadUiType
-from classes import print_qt
-from classes.my_class import User
-from function import to_excel, my_sql, table_to_html
+from my_class import print_qt, orm_class
+from function import to_excel, table_to_html
+from pony.orm import *
+from my_class.orm_class import Parts, PartsTree, ManufacturerParts
+from treelib import Tree
 
-tree_class = loadUiType(getcwd() + '/ui/templates ui/tree.ui')[0]
-change_tree_item_class = loadUiType(getcwd() + '/ui/templates ui/add_tree_item.ui')[0]
-transfer_class = loadUiType(getcwd() + '/ui/templates ui/tree_transfer.ui')[0]
+tree_class = loadUiType(getcwd() + '/ui/templates ui/tree_table/tree.ui')[0]
+change_tree_item_class = loadUiType(getcwd() + '/ui/templates ui/tree_table/add_tree_item.ui')[0]
+transfer_class = loadUiType(getcwd() + '/ui/templates ui/tree_table/tree_transfer.ui')[0]
+
+
+COLOR_WINDOW = "255, 255, 255"
 
 
 class TreeList(QMainWindow, tree_class):
@@ -21,7 +26,6 @@ class TreeList(QMainWindow, tree_class):
 
         self.select_item = open_id  # Переменная для открытия выбраного ID
 
-        self.access()
         self.set_settings()
         self.set_table_header()
         self.set_tree_info()
@@ -29,40 +33,19 @@ class TreeList(QMainWindow, tree_class):
         # if open_id:
         #     self.open_id(self.select_item)
 
-    def access(self):
-        for item in User().access_list(self.__class__.__name__):
-            a = getattr(self, item["atr1"])
-            if item["atr2"]:
-                a = getattr(a, item["atr2"])
-
-            if item["value"]:
-                if item["value"] == "True":
-                    val = True
-                elif item["value"] == "False":
-                    val = False
-                else:
-                    val = item["value"]
-                a(val)
-            else:
-                a()
-
     def set_settings(self):
         self.setWindowTitle("Список")  # Имя окна
-        self.toolBar.setStyleSheet("background-color: rgb(255, 255, 255);")  # Цвет бара
+        self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW)  # Цвет бара
 
         # Названия колонк (Имя, Длинна)
         self.table_header_name = (("1", 100), ("2", 150), ("3", 200))
 
-        self.query_tree_select = "SELECT Id, Parent_Id, Name FROM operation_tree"
-        self.query_tree_add = "INSERT INTO operation_tree (Parent_Id, Name) VALUES (%s, %s)"
-        self.query_tree_change = "UPDATE operation_tree SET Name = %s WHERE Id = %s"
-        self.query_tree_del = "DELETE FROM operation_tree WHERE Id = %s"
+        self.tree_orm = PartsTree  # Класс дерева!
 
-        #  нулевой элемент должен быть ID а первый Parent_ID (ID категории)
-        self.query_table_select = "SELECT operations.Id, operations.Tree_Id, operations.Name, operations.Price, sewing_machine.Name  " \
-                                  "FROM operations LEFT JOIN sewing_machine ON operations.Sewing_Machine_Id = sewing_machine.Id"
-        self.query_transfer_item = "UPDATE operations SET Tree_Id = %s WHERE Id = %s"
-        self.query_table_dell = "DELETE FROM operations WHERE Id = %s"
+        # нулевой элемент должен быть ID а первый Parent_ID (ID категории)
+        self.item = Parts  # Класс который будем выводить! Без скобок!
+        # сам запрос
+        self.query = select((p.id, p.tree, p.name, p.note) for p in Parts)
 
         # Настройки окна добавления и редактирования дерева
         self.set_new_win_tree = {"WinTitle": "Добавление категории",
@@ -82,15 +65,12 @@ class TreeList(QMainWindow, tree_class):
             self.table_widget.horizontalHeader().resizeSection(i, int(headet_item[1]))
             i += 1
 
+    @db_session
     def set_table_info(self):
-        self.table_widget.setSortingEnabled(False)
-        self.table_items = my_sql.sql_select(self.query_table_select)
-        if "mysql.connector.errors" in str(type(self.table_items)):
-                QMessageBox.critical(self, "Ошибка sql получение таблицы", self.table_items.msg, QMessageBox.Ok)
-                return False
-
         self.table_widget.clearContents()
         self.table_widget.setRowCount(0)
+
+        self.table_items = self.query[:]
 
         if not self.table_items:
             return False
@@ -115,39 +95,34 @@ class TreeList(QMainWindow, tree_class):
             self.open_id(self.select_item)
             self.select_item = None
 
+    @db_session
     def set_tree_info(self):  # заполняем девево
-        self.tree = my_sql.sql_select(self.query_tree_select)
-        if "mysql.connector.errors" in str(type(self.tree)):
-            QMessageBox.critical(self, "Ошибка sql вывода дерева", self.tree.msg, QMessageBox.Ok)
-            return False
+        self.tree = Tree()
+
+        all = self.tree_orm.select().order_by(self.tree_orm.parent, desc(self.tree_orm.position))[:]
 
         self.tree_widget.clear()
-        # i = 0
-        # while self.tree and i < 10:
-        for item_tree in self.tree:
-            if item_tree[1] == 0:
-                add_item = QTreeWidgetItem((item_tree[2], ))
-                add_item.setData(0, 5, item_tree[0])
-                self.tree_widget.addTopLevelItem(add_item)
-            else:
-                for n in range(self.tree_widget.topLevelItemCount()):
-                    item = self.tree_widget.topLevelItem(n)
-                    self.search(item, item_tree)
 
-        add_item = QTreeWidgetItem(("Показать всё", ))
-        add_item.setData(0, 5, -1)
-        self.tree_widget.addTopLevelItem(add_item)
+        # Создаем дерево в памяти
+        self.tree.create_node("main", 0)
+        for tree_item in all:
+            self.tree.create_node(tree_item.name, tree_item.id, parent=tree_item.parent)
 
-    def search(self, item, search_tuple):  # Ищет кортеж в детях главных итемах дерева
-        if item.data(0, 5) == search_tuple[1]:
-            add_item = QTreeWidgetItem((search_tuple[2], ))
-            add_item.setData(0, 5, search_tuple[0])
-            item.addChild(add_item)
-            return True
         else:
-            for number_child in range(item.childCount()):
-                self.search(item.child(number_child), search_tuple)
-            return False
+            self.tree.create_node("Показать всё", "all", parent=0, data="all")
+
+        # Берем главные разделы и начинаем обходить их детей!
+        for node in self.tree.children(0):
+            root_item = self.search(node.identifier)
+            self.tree_widget.addTopLevelItem(root_item)
+
+    def search(self, id):  # Ищем ветви дерева
+        item = QTreeWidgetItem((self.tree[id].tag, ))  # Создаем полученый Id
+        item.setData(0, 5, self.tree[id].identifier)  # Добавляем ID
+        for id in self.tree[id].fpointer:  # Смотрим есть ли дети у этой ветви, если есть обзодим их
+            item.addChild(self.search(id))  # Добавляем детей этой ветви!
+
+        return item
 
     def open_id(self, id):
         select_item = None
@@ -226,13 +201,13 @@ class TreeList(QMainWindow, tree_class):
             return False
 
         self.table_widget.setSortingEnabled(False)
-        if tree_id == -1:
+        if tree_id == "all":
             self.set_table_info()
         else:
             self.table_widget.clearContents()
             self.table_widget.setRowCount(0)
             for table_typle in self.table_items:
-                if table_typle[1] == tree_id:
+                if table_typle[1].id == tree_id:
                     self.table_widget.insertRow(self.table_widget.rowCount())
                     for column in range(2, len(table_typle)):
                         item = QTableWidgetItem(str(table_typle[column]))
@@ -241,58 +216,66 @@ class TreeList(QMainWindow, tree_class):
 
         self.table_widget.setSortingEnabled(True)
 
+    @db_session
     def ui_add_tree_item(self):
         info = ChangeTreeItem()
         info.set_settings(self.set_new_win_tree)
         if info.exec() == 0:
             return False
+
+        pos = info.le_position.text() or None
+
         if info.rb_new.isChecked():
-            sql_tree =  my_sql.sql_change(self.query_tree_add, (0, info.le_name.text(), info.le_position.text()))
-            if "mysql.connector.errors" in str(type(sql_tree)):
-                QMessageBox.critical(self, "Ошибка sql добавления корневого итема в дерево", sql_tree.msg, QMessageBox.Ok)
-                return False
-            self.set_tree_info()
-        elif info.rb_old.isChecked():
+            parent_id = 0
+        else:
             try:
                 parent_id = self.tree_widget.selectedItems()[0].data(0, 5)
-                sql_tree = my_sql.sql_change(self.query_tree_add, (parent_id, info.le_name.text(), info.le_position.text()))
-                if "mysql.connector.errors" in str(type(sql_tree)):
-                    QMessageBox.critical(self, "Ошибка sql добавления итема в дерево", sql_tree.msg, QMessageBox.Ok)
-                    return False
-                self.set_tree_info()
             except:
-                  QMessageBox.critical(self, "Ошибка добавления", "Выделите элемент в который вы хотите вставить элемент", QMessageBox.Ok)
+                QMessageBox.critical(self, "Ошибка добавления", "Выделите элемент в который вы хотите вставить элемент", QMessageBox.Ok)
+                return False
 
+        self.tree_orm(name=info.le_name.text(), position=pos, parent=parent_id)
+        commit()
+
+        self.set_tree_info()
+
+    @db_session
     def ui_change_tree_item(self):
 
         try:
             parent_name = self.tree_widget.selectedItems()[0].text(0)
-            parent_id = self.tree_widget.selectedItems()[0].data(0, 5)
-            info = ChangeTreeItem()
-            info.set_settings(self.set_new_win_tree)
-            info.rb_old.close()
-            info.rb_new.close()
-            info.le_name.setText(parent_name)
-            if info.exec() == 0:
-                return False
-            sql_tree = my_sql.sql_change(self.query_tree_change, (info.le_name.text(), info.le_position.text(), parent_id))
-            if "mysql.connector.errors" in str(type(sql_tree)):
-                QMessageBox.critical(self, "Ошибка sql изменения итема в дереве", sql_tree.msg, QMessageBox.Ok)
-                return False
-            self.set_tree_info()
+            id_select = self.tree_widget.selectedItems()[0].data(0, 5)
         except:
             QMessageBox.critical(self, "Ошибка изменения", "Выделите элемент который хотите изменить", QMessageBox.Ok)
+            return False
 
+        info = ChangeTreeItem()
+        info.set_settings(self.set_new_win_tree)
+        info.rb_old.close()
+        info.rb_new.close()
+        info.le_name.setText(parent_name)
+        if info.exec() == 0:
+            return False
+
+        pos = info.le_position.text() or None
+
+        tree = self.tree_orm[id_select]
+        tree.name = info.le_name.text()
+        tree.position = pos
+        commit()
+
+        self.set_tree_info()
+
+    @db_session
     def ui_dell_tree_item(self):
         result = QMessageBox.question(self, "Удаление", "Точно удалить ветку?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if result == 16384:
             try:
-                parent_id = self.tree_widget.selectedItems()[0].data(0, 5)
                 if self.tree_widget.selectedItems()[0].childCount() == 0:
-                    sql_tree = my_sql.sql_change(self.query_tree_del, (parent_id, ))
-                    if "mysql.connector.errors" in str(type(sql_tree)):
-                        QMessageBox.critical(self, "Ошибка sql удаления итема в дереве", sql_tree.msg, QMessageBox.Ok)
-                        return False
+
+                    id_select = self.tree_widget.selectedItems()[0].data(0, 5)
+                    self.tree_orm[id_select].delete()
+                    commit()
                     self.set_tree_info()
                 else:
                     QMessageBox.critical(self, "Ошибка", "У этого элеиента есть дети удалите сначало их", QMessageBox.Ok)
@@ -334,6 +317,7 @@ class TreeList(QMainWindow, tree_class):
             self.close()
             self.destroy()
 
+    @db_session
     def ui_dell_table_item(self):  # Удалить предмет
         result = QMessageBox.question(self, "Удаление", "Точно удалить элемент?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if result == 16384:
@@ -342,18 +326,15 @@ class TreeList(QMainWindow, tree_class):
             except:
                 QMessageBox.critical(self, "Ошибка Удаления", "Выделите элемент который хотите удалить", QMessageBox.Ok)
                 return False
-            for id in id_item:
-                sql_info = my_sql.sql_change(self.query_table_dell, (id.data(5), ))
-                if "mysql.connector.errors" in str(type(sql_info)):
-                    QMessageBox.critical(self, "Ошибка sql удаления элемента таблицы", sql_info.msg, QMessageBox.Ok)
-                    return False
-
+            self.item[id_item[0].data(5)].delete()
+            commit()
             self.set_table_info()
             # self.set_tree_info()
 
     def ui_filter_table(self):
         pass
 
+    @db_session
     def ui_transfer_table(self):
         try:
             transfer_id = []
@@ -367,7 +348,7 @@ class TreeList(QMainWindow, tree_class):
             QMessageBox.critical(self, "Ошибка переноса", "Выберете элементы для переноса", QMessageBox.Ok)
             return False
 
-        info = TreeTransfer(self.query_tree_select)
+        info = TreeTransfer(self.tree_orm)
         info.set_settings(self.set_transfer_win)
         if info.exec() == 0:
             return False
@@ -377,10 +358,8 @@ class TreeList(QMainWindow, tree_class):
         new_tree_id = info.select_tree_id
 
         for item_id in transfer_id:
-            sql_info = my_sql.sql_change(self.query_transfer_item, (new_tree_id, item_id))
-            if "mysql.connector.errors" in str(type(sql_info)):
-                QMessageBox.critical(self, "Ошибка sql получение табюлицы", sql_info.msg, QMessageBox.Ok)
-                return False
+            self.item[item_id].tree = new_tree_id
+            commit()
         self.set_table_info()
 
     def ui_double_item_table(self):  # Дублирование строки
@@ -433,11 +412,11 @@ class ChangeTreeItem(QDialog, change_tree_item_class):
 
 
 class TreeTransfer(QDialog, transfer_class):
-    def __init__(self, query):
+    def __init__(self, orm):
         super(TreeTransfer, self).__init__()
         self.setupUi(self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
-        self.query_tree_select = query
+        self.tree_orm = orm
         self.set_tree_info()
         self.select_tree_id = False
 
@@ -452,33 +431,32 @@ class TreeTransfer(QDialog, transfer_class):
                 getattr(self, name).setText(value)
 
     def set_tree_info(self):  # заполняем девево
-        self.tree = my_sql.sql_select(self.query_tree_select)
-        if "mysql.connector.errors" in str(type(self.tree)):
-            QMessageBox.critical(self, "Ошибка sql вывода дерева", self.tree.msg, QMessageBox.Ok)
-            return False
+        self.tree = Tree()
+
+        all = self.tree_orm.select().order_by(self.tree_orm.parent, desc(self.tree_orm.position))[:]
 
         self.tree_widget.clear()
-        for item_tree in self.tree:
-            if item_tree[1] == 0:
-                add_item = QTreeWidgetItem((item_tree[2], ))
-                add_item.setData(0, 5, item_tree[0])
-                self.tree_widget.addTopLevelItem(add_item)
-            else:
-                for n in range(self.tree_widget.topLevelItemCount()):
-                    item = self.tree_widget.topLevelItem(n)
-                    self.search(item, item_tree)
 
-    def search(self, item, search_tuple):  # Ищет кортеж в детях главных итемах дерева
-        if item.data(0, 5) == search_tuple[1]:
-            add_item = QTreeWidgetItem((search_tuple[2], ))
-            add_item.setData(0, 5, search_tuple[0])
-            item.addChild(add_item)
-            self.tree.remove(search_tuple)
-            return True
+        # Создаем дерево в памяти
+        self.tree.create_node("main", 0)
+        for tree_item in all:
+            self.tree.create_node(tree_item.name, tree_item.id, parent=tree_item.parent)
+
         else:
-            for number_child in range(item.childCount()):
-                self.search(item.child(number_child), search_tuple)
-            return False
+            self.tree.create_node("Показать всё", "all", parent=0, data="all")
+
+        # Берем главные разделы и начинаем обходить их детей!
+        for node in self.tree.children(0):
+            root_item = self.search(node.identifier)
+            self.tree_widget.addTopLevelItem(root_item)
+
+    def search(self, id):  # Ищем ветви дерева
+        item = QTreeWidgetItem((self.tree[id].tag, ))  # Создаем полученый Id
+        item.setData(0, 5, self.tree[id].identifier)  # Добавляем ID
+        for id in self.tree[id].fpointer:  # Смотрим есть ли дети у этой ветви, если есть обзодим их
+            item.addChild(self.search(id))  # Добавляем детей этой ветви!
+
+        return item
 
     def ui_save_tree_item(self, item):
         self.select_tree_id = item.data(0, 5)

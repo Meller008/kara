@@ -8,7 +8,6 @@ from PyQt5.QtGui import QIcon
 from pony.orm import *
 
 
-
 COLOR_WINDOW_MANUFACTURER = "102, 0, 255"
 COLOR_WINDOW_TYPE = "51, 51, 255"
 COLOR_WINDOW_MACHINE = "102, 153, 255"

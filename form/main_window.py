@@ -2,7 +2,7 @@ from os import getcwd
 from PyQt5.QtWidgets import QMainWindow, QMdiSubWindow
 from PyQt5.uic import loadUiType
 from PyQt5.QtGui import QIcon
-from form import country, shipping, payment, vendor, sewing_machine
+from form import country, shipping, payment, vendor, sewing_machine, parts
 
 main_class = loadUiType(getcwd() + '/ui/main_window.ui')[0]
 
@@ -70,3 +70,21 @@ class MainWindow(QMainWindow, main_class):
         self.mdi.addSubWindow(self.sub_sewing_machine)
         self.sub_sewing_machine.resize(self.sewing_machine.size())
         self.sub_sewing_machine.show()
+
+    def ui_view_parts_list(self):
+        self.parts_list = parts.PartsList()
+        self.sub_parts_list = QMdiSubWindow()
+        self.sub_parts_list.setWidget(self.parts_list)
+        self.mdi.addSubWindow(self.sub_parts_list)
+        self.sub_parts_list.resize(self.parts_list.size())
+        self.sub_parts_list.show()
+
+    def ui_view_parts_manufacturer_list(self):
+        self.parts_manufacturer_list = parts.PartsManufacturer()
+        self.sub_parts_manufacturer_list = QMdiSubWindow()
+        self.sub_parts_manufacturer_list.setWidget(self.parts_manufacturer_list)
+        self.mdi.addSubWindow(self.sub_parts_manufacturer_list)
+        self.sub_parts_manufacturer_list.resize(self.parts_manufacturer_list.size())
+        self.sub_parts_manufacturer_list.show()
+
+

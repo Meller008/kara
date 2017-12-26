@@ -45,7 +45,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <property name="usesScrollButtons">
        <bool>true</bool>
@@ -164,6 +164,19 @@
         <property name="spacing">
          <number>0</number>
         </property>
+        <item row="0" column="2">
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item row="0" column="0">
          <widget class="QPushButton" name="pushButton_7">
           <property name="sizePolicy">
@@ -178,17 +191,18 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+         <widget class="QPushButton" name="pushButton_11">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
+          <property name="text">
+           <string>Производители
+запчастей</string>
           </property>
-         </spacer>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -426,8 +440,8 @@
    <slot>ui_view_manufacturer_machine()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>170</x>
-     <y>60</y>
+     <x>163</x>
+     <y>56</y>
     </hint>
     <hint type="destinationlabel">
      <x>186</x>
@@ -442,7 +456,7 @@
    <slot>ui_view_type_machine()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>292</x>
+     <x>238</x>
      <y>56</y>
     </hint>
     <hint type="destinationlabel">
@@ -458,12 +472,44 @@
    <slot>ui_view_sewing_machine()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>66</x>
-     <y>69</y>
+     <x>68</x>
+     <y>56</y>
     </hint>
     <hint type="destinationlabel">
      <x>92</x>
      <y>-158</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_7</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_view_parts_list()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>34</x>
+     <y>38</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-96</x>
+     <y>141</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_11</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_view_parts_manufacturer_list()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>134</x>
+     <y>40</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>136</x>
+     <y>-77</y>
     </hint>
    </hints>
   </connection>
@@ -476,5 +522,7 @@
   <slot>ui_view_manufacturer_machine()</slot>
   <slot>ui_view_type_machine()</slot>
   <slot>ui_view_sewing_machine()</slot>
+  <slot>ui_view_parts_list()</slot>
+  <slot>ui_view_parts_manufacturer_list()</slot>
  </slots>
 </ui>

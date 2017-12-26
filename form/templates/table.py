@@ -43,8 +43,6 @@ class TableList(QMainWindow, table_list_class):
         # сам запрос
         self.query = select((v.id, v.name, v.mail, v.site) for v in orm_class.Vendor)
 
-        # сам запрос
-
     def set_table_header(self):
         i = 0
         self.table_widget.clear()
@@ -101,21 +99,18 @@ class TableList(QMainWindow, table_list_class):
             self.close()
             self.destroy()
 
+    @db_session
     def ui_dell_table_item(self):
-        pass
-        # result = QMessageBox.question(self, "Удаление", "Точно удалить элемент?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-        # if result == 16384:
-        #     try:
-        #         id_item = self.table_widget.selectedItems()
-        #     except:
-        #         QMessageBox.critical(self, "Ошибка Удаления", "Выделите элемент который хотите удалить", QMessageBox.Ok)
-        #         return False
-        #     for id in id_item:
-        #         sql_info = my_sql.sql_change(self.query_table_dell, (id.data(5), ))
-        #         if "mysql.connector.errors" in str(type(sql_info)):
-        #             QMessageBox.critical(self, "Ошибка sql удаления элемента таблицы", sql_info.msg, QMessageBox.Ok)
-        #             return False
-        # self.set_table_info()
+        result = QMessageBox.question(self, "Удаление", "Точно удалить элемент?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if result == 16384:
+            try:
+                id_item = self.table_widget.selectedItems()
+            except:
+                QMessageBox.critical(self, "Ошибка Удаления", "Выделите элемент который хотите удалить", QMessageBox.Ok)
+                return False
+            self.item[id_item[0].data(5)].delete()
+            commit()
+            self.set_table_info()
 
     def ui_update(self):
         self.table_widget.setSortingEnabled(False)

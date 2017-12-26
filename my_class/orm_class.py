@@ -25,7 +25,6 @@ class PaymentMethod(db.Entity):
     note = Optional(str)
     vendors = Set('Vendor')
 
-
 class Vendor(db.Entity):
     id = PrimaryKey(int, auto=True)
     name = Required(str)
@@ -39,11 +38,36 @@ class Vendor(db.Entity):
     payment_methods = Set(PaymentMethod)
 
 
+class Parts(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    name = Optional(str)
+    note = Optional(str)
+    manufacturer = Required('ManufacturerParts')
+    sewing_machines = Set('SewingMachine')
+    tree = Required('PartsTree')
+
+
+class PartsTree(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    name = Required(str)
+    parent = Required(int)
+    position = Optional(int, default=20)
+    parts = Set(Parts)
+
+
+class ManufacturerParts(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    name = Optional(str)
+    note = Optional(str)
+    parts = Set(Parts)
+
+
 class SewingMachine(db.Entity):
     id = PrimaryKey(int, auto=True)
     name = Required(str)
     note = Optional(str)
     manufacturer = Required('ManufacturerSewingMachine')
+    parts = Set(Parts)
     type = Set('TypeSewingMachine')
 
 
@@ -59,7 +83,6 @@ class TypeSewingMachine(db.Entity):
     name = Required(str)
     note = Optional(str)
     sewing_machines = Set(SewingMachine)
-
 
 sql_debug(True)
 db.generate_mapping(create_tables=True, check_tables=True)
