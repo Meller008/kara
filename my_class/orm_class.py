@@ -5,25 +5,26 @@ db = Database()
 db.bind(provider='mysql', host='192.168.1.24', user='kara', passwd='Aa088011', db='kara')
 
 
-class Country(db.Entity):
+class CountryVendor(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    name = Required(str, unique=True)
+    note = Optional(str)
+    city = Set('CityVendor')
+
+
+class ShippingMethodVendor(db.Entity):
     id = PrimaryKey(int, auto=True)
     name = Required(str, unique=True)
     note = Optional(str)
     vendors = Set('Vendor')
 
 
-class ShippingMethod(db.Entity):
+class PaymentMethodVendor(db.Entity):
     id = PrimaryKey(int, auto=True)
     name = Required(str, unique=True)
     note = Optional(str)
     vendors = Set('Vendor')
 
-
-class PaymentMethod(db.Entity):
-    id = PrimaryKey(int, auto=True)
-    name = Required(str, unique=True)
-    note = Optional(str)
-    vendors = Set('Vendor')
 
 class Vendor(db.Entity):
     id = PrimaryKey(int, auto=True)
@@ -33,9 +34,17 @@ class Vendor(db.Entity):
     note = Optional(str)
     phone = Optional(str)
     site = Optional(str)
-    country = Required(Country)
-    shipping_methods = Set(ShippingMethod)
-    payment_methods = Set(PaymentMethod)
+    city = Required('CityVendor')
+    shipping_methods = Set(ShippingMethodVendor)
+    payment_methods = Set(PaymentMethodVendor)
+
+
+class CityVendor(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    name = Optional(str)
+    note = Optional(str)
+    country = Required(CountryVendor)
+    vendors = Set(Vendor)
 
 
 class Parts(db.Entity):

@@ -16,15 +16,23 @@ class MainWindow(QMainWindow, main_class):
         self.show()
 
     def ui_view_country(self):
-        self.country = country.CountryList()
+        self.country = country.CountryVendorList()
         self.sub_country = QMdiSubWindow()
         self.sub_country.setWidget(self.country)
         self.mdi.addSubWindow(self.sub_country)
         self.sub_country.resize(self.country.size())
         self.sub_country.show()
 
+    def ui_view_city(self):
+        self.city_vendor = country.CityVendorList()
+        self.sub_city_vendor = QMdiSubWindow()
+        self.sub_city_vendor.setWidget(self.city_vendor)
+        self.mdi.addSubWindow(self.sub_city_vendor)
+        self.sub_city_vendor.resize(self.city_vendor.size())
+        self.sub_city_vendor.show()
+
     def ui_view_shipping_method(self):
-        self.shipping_method = shipping.ShippingMethodList()
+        self.shipping_method = shipping.ShippingMethodVendorList()
         self.sub_shipping_method = QMdiSubWindow()
         self.sub_shipping_method.setWidget(self.shipping_method)
         self.mdi.addSubWindow(self.sub_shipping_method)
@@ -32,7 +40,7 @@ class MainWindow(QMainWindow, main_class):
         self.sub_shipping_method.show()
 
     def ui_view_payment_method(self):
-        self.Payment_method = payment.PaymentMethodList()
+        self.Payment_method = payment.PaymentMethodVendorList()
         self.sub_Payment_method = QMdiSubWindow()
         self.sub_Payment_method.setWidget(self.Payment_method)
         self.mdi.addSubWindow(self.sub_Payment_method)

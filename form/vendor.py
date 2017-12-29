@@ -5,7 +5,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from form.templates import table
 from form import payment, shipping
-from my_class.orm_class import Vendor, Country, PaymentMethod, ShippingMethod
+from my_class.orm_class import Vendor, CityVendor, PaymentMethodVendor, ShippingMethodVendor
 from pony.orm import *
 
 
@@ -80,7 +80,7 @@ class VendorBrows(QDialog, vendor_class):
     @db_session
     def set_tart_settings(self):
         # Вставим страны
-        for c in select(c for c in Country):
+        for c in select(c for c in CityVendor):
             self.cb_country.addItem(c.name, c.id)
 
         if self.id:
@@ -91,7 +91,7 @@ class VendorBrows(QDialog, vendor_class):
             self.le_note.setText(self.vendor_class.note)
             self.le_phone.setText(self.vendor_class.phone)
             self.le_site.setText(self.vendor_class.site)
-            self.cb_country.setCurrentText(self.vendor_class.country.name)
+            self.cb_country.setCurrentText(self.vendor_class.city.name)
 
             for ship in self.vendor_class.shipping_methods:
                 item = QListWidgetItem(ship.name)
@@ -107,12 +107,12 @@ class VendorBrows(QDialog, vendor_class):
             pass
 
     def ui_add_payment(self):
-        self.pay_win = payment.PaymentMethodList(self, True)
+        self.pay_win = payment.PaymentMethodVendorList(self, True)
         self.pay_win.setWindowModality(Qt.ApplicationModal)
         self.pay_win.show()
 
     def ui_add_shipping(self):
-        self.ship_win = shipping.ShippingMethodList(self, True)
+        self.ship_win = shipping.ShippingMethodVendorList(self, True)
         self.ship_win.setWindowModality(Qt.ApplicationModal)
         self.ship_win.show()
 
@@ -144,7 +144,7 @@ class VendorBrows(QDialog, vendor_class):
                 "note": self.le_note.text(),
                 "phone": self.le_phone.text(),
                 "site": self.le_site.text(),
-                "country": self.cb_country.currentData()
+                "city": self.cb_country.currentData()
                 }
 
         if self.id:
@@ -153,14 +153,14 @@ class VendorBrows(QDialog, vendor_class):
         else:
             v = Vendor(**value)
 
-        v.shipping_methods.remove(map(lambda x: ShippingMethod[x], self.del_shipping))
-        v.payment_methods.remove(map(lambda x: PaymentMethod[x], self.del_payment))
+        v.shipping_methods.remove(map(lambda x: ShippingMethodVendor[x], self.del_shipping))
+        v.payment_methods.remove(map(lambda x: PaymentMethodVendor[x], self.del_payment))
 
         for row in range(self.lw_shipping.count()):
-            v.shipping_methods.add(ShippingMethod[self.lw_shipping.item(row).data(5)])
+            v.shipping_methods.add(ShippingMethodVendor[self.lw_shipping.item(row).data(5)])
 
         for row in range(self.lw_payment.count()):
-            v.payment_methods.add(PaymentMethod[self.lw_payment.item(row).data(5)])
+            v.payment_methods.add(PaymentMethodVendor[self.lw_payment.item(row).data(5)])
 
         self.close()
         self.destroy()
@@ -171,14 +171,14 @@ class VendorBrows(QDialog, vendor_class):
 
     @db_session
     def of_list_select_payment_method(self, pay_id):
-        method = PaymentMethod[pay_id]
+        method = PaymentMethodVendor[pay_id]
         item = QListWidgetItem(method.name)
         item.setData(5, method.id)
         self.lw_payment.addItem(item)
 
     @db_session
     def of_list_select_shipping_method(self, ship_id):
-        ship = ShippingMethod[ship_id]
+        ship = ShippingMethodVendor[ship_id]
         item = QListWidgetItem(ship.name)
         item.setData(5, ship.id)
         self.lw_shipping.addItem(item)
