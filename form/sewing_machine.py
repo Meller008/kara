@@ -1,19 +1,15 @@
 from form.templates import list, table
 from my_class.orm_class import ManufacturerSewingMachine, TypeSewingMachine, SewingMachine
-from PyQt5.uic import loadUiType
+from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt
 from os import getcwd
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QListWidgetItem
 from PyQt5.QtGui import QIcon
 from pony.orm import *
 
-
 COLOR_WINDOW_MANUFACTURER = "102, 0, 255"
 COLOR_WINDOW_TYPE = "51, 51, 255"
 COLOR_WINDOW_MACHINE = "102, 153, 255"
-
-
-main_class = loadUiType(getcwd() + '/ui/sewing_machine.ui')[0]
 
 
 class SewingMachineList(table.TableList):
@@ -40,9 +36,9 @@ class SewingMachineList(table.TableList):
         self.machine_window.setWindowModality(Qt.ApplicationModal)
         self.machine_window.show()
 
-    def ui_change_table_item(self, id=False):  # изменить элемент
-        if id:
-            item_id = id
+    def ui_change_table_item(self, item_id=False):  # изменить элемент
+        if item_id:
+            item_id = item_id
         else:
             try:
                 item_id = self.table_widget.selectedItems()[0].data(5)
@@ -64,10 +60,10 @@ class SewingMachineList(table.TableList):
             self.destroy()
 
 
-class SewingMachineBrows(QMainWindow, main_class):
+class SewingMachineBrows(QMainWindow):
     def __init__(self, main=None, machine_id=None):
         super(SewingMachineBrows, self).__init__()
-        self.setupUi(self)
+        loadUi(getcwd() + '/ui/sewing_machine.ui', self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
         self.widget.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW_MACHINE)
 

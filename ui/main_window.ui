@@ -79,27 +79,6 @@
         <property name="spacing">
          <number>0</number>
         </property>
-        <item row="0" column="6">
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="0">
-         <widget class="QPushButton" name="pushButton">
-          <property name="text">
-           <string>Приходы
-товара</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="1">
          <widget class="QPushButton" name="pushButton_6">
           <property name="sizePolicy">
@@ -113,7 +92,15 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="2">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string>Приходы
+товара</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
          <widget class="QPushButton" name="pushButton_2">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -127,7 +114,7 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="5">
+        <item row="0" column="6">
          <widget class="QPushButton" name="pushButton_4">
           <property name="text">
            <string>Способы
@@ -135,7 +122,7 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="4">
+        <item row="0" column="5">
          <widget class="QPushButton" name="pushButton_3">
           <property name="text">
            <string>Способы
@@ -143,11 +130,39 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="3">
+        <item row="0" column="4">
          <widget class="QPushButton" name="pushButton_12">
           <property name="text">
            <string>Города
 прихода</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="8">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="2">
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="7">
+         <widget class="QPushButton" name="pushButton_13">
+          <property name="text">
+           <string>Прочие
+растраты</string>
           </property>
          </widget>
         </item>
@@ -400,8 +415,8 @@
    <slot>ui_view_manufacturer_machine()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>163</x>
-     <y>56</y>
+     <x>109</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
      <x>186</x>
@@ -416,8 +431,8 @@
    <slot>ui_view_type_machine()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>238</x>
-     <y>56</y>
+     <x>196</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
      <x>292</x>
@@ -432,8 +447,8 @@
    <slot>ui_view_sewing_machine()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>68</x>
-     <y>56</y>
+     <x>35</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
      <x>92</x>
@@ -464,8 +479,8 @@
    <slot>ui_view_parts_manufacturer_list()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>40</y>
+     <x>101</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
      <x>136</x>
@@ -537,6 +552,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_view_supply()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>49</x>
+     <y>32</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>45</x>
+     <y>-83</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_13</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_view_supply_other_cost()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>494</x>
+     <y>39</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>486</x>
+     <y>-94</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ui_view_country()</slot>
@@ -549,5 +596,7 @@
   <slot>ui_view_parts_list()</slot>
   <slot>ui_view_parts_manufacturer_list()</slot>
   <slot>ui_view_city()</slot>
+  <slot>ui_view_supply()</slot>
+  <slot>ui_view_supply_other_cost()</slot>
  </slots>
 </ui>

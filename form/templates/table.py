@@ -2,7 +2,7 @@ from os import getcwd
 from decimal import Decimal
 from datetime import date
 import re
-from PyQt5.uic import loadUiType
+from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QMainWindow, QFileDialog
 from PyQt5.QtGui import QIcon
 from function import to_excel, table_to_html
@@ -10,16 +10,13 @@ from my_class import print_qt, orm_class
 from pony.orm import *
 
 
-table_list_class = loadUiType(getcwd() + '/ui/templates ui/table/table.ui')[0]
-
-
 COLOR_WINDOW = "255, 255, 255"
 
 
-class TableList(QMainWindow, table_list_class):
+class TableList(QMainWindow):
     def __init__(self, main_class=0, dc_select=False, other=None):
         super(TableList, self).__init__()
-        self.setupUi(self)
+        loadUi(getcwd() + '/ui/templates ui/table/table.ui', self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
 
         self.main = main_class

@@ -1,5 +1,5 @@
 from os import getcwd
-from PyQt5.uic import loadUiType
+from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QMessageBox, QDialog, QListWidgetItem
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
@@ -8,16 +8,11 @@ from form import payment, shipping
 from my_class.orm_class import Vendor, CityVendor, PaymentMethodVendor, ShippingMethodVendor
 from pony.orm import *
 
-
-vendor_class = loadUiType(getcwd() + '/ui/vendor_brows.ui')[0]
-
-
 COLOR_WINDOW = "153, 102, 204"
 
 
 class VendorList(table.TableList):
     def set_settings(self):
-
         self.setWindowTitle("Поставщики")  # Имя окна
         self.resize(400, 270)
         self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW)  # Цвет бара
@@ -63,10 +58,10 @@ class VendorList(table.TableList):
             self.destroy()
 
 
-class VendorBrows(QDialog, vendor_class):
+class VendorBrows(QDialog):
     def __init__(self, main=None, ven_id=None):
         super(VendorBrows, self).__init__()
-        self.setupUi(self)
+        loadUi(getcwd() + '/ui/vendor_brows.ui', self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
         self.widget.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW)
 

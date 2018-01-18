@@ -1,26 +1,23 @@
 from os import getcwd, path, mkdir, remove
 import shutil
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QTableWidgetItem
-from PyQt5.uic import loadUiType
+from PyQt5.uic import loadUi
 from PyQt5.QtGui import QIcon, QImage, QPixmap
 from PyQt5.QtCore import Qt
 from my_class.orm_class import Parts, PartsTree, ManufacturerParts, SewingMachine
 from form.templates import tree, list
 from form import sewing_machine
+from function.str_to import str_to_float
 from pony.orm import *
-
-product_class = loadUiType(getcwd() + '/ui/product.ui')[0]
-
 
 COLOR_WINDOW_PARTS = "0, 102, 102"
 COLOR_WINDOW_PARTS_MANUFACTURER = "204, 255, 255"
-
 PHOTO_DIR = getcwd() + "/photo/"
 
 
 class PartsList(tree.TreeList):
     def set_settings(self):
-        self.setWindowTitle("Список")  # Имя окна
+        self.setWindowTitle("Список товара")  # Имя окна
         self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW_PARTS)  # Цвет бара
 
         # Названия колонк (Имя, Длинна)
@@ -74,17 +71,15 @@ class PartsList(tree.TreeList):
         if not self.dc_select:
             self.ui_change_table_item(item.data(5))
         else:
-            # что хотим получить ставим всместо 0
-            item = (self.table_widget.item(item.row(), 0).text(), item.data(5))
-            self.main.of_tree_select_product(item)
+            self.main.of_tree_select_product(item.data(5))
             self.close()
             self.destroy()
 
 
-class PartsWindow(QMainWindow, product_class):
+class PartsWindow(QMainWindow):
     def __init__(self, main=None, product_id=None, tree_id=None):
         super(PartsWindow, self).__init__()
-        self.setupUi(self)
+        loadUi(getcwd() + '/ui/product.ui', self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
         self.widget.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW_PARTS)
 
@@ -109,6 +104,7 @@ class PartsWindow(QMainWindow, product_class):
             self.le_note.setText(product.note)
             self.le_manufacturer.setText(product.manufacturer.name)
             self.le_manufacturer.setWhatsThis(str(product.manufacturer.id))
+            self.le_price.setText(str(product.price))
 
             for machine in product.sewing_machines:
                 self.tw_machine.insertRow(self.tw_machine.rowCount())
@@ -193,6 +189,7 @@ class PartsWindow(QMainWindow, product_class):
                 "note": self.le_note.text(),
                 "manufacturer": self.le_manufacturer.whatsThis(),
                 "tree": self.tree_id,
+                "price": str_to_float(self.le_price.text())
                 }
 
         if self.id:

@@ -1,15 +1,12 @@
 from os import getcwd
 from form.templates import list
 from my_class.orm_class import CityVendor, CountryVendor
-from PyQt5.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QTableWidgetItem, QDialog, QListWidgetItem
-from PyQt5.uic import loadUiType
-from PyQt5.QtGui import QIcon, QImage, QPixmap
+from PyQt5.QtWidgets import QMessageBox, QDialog
+from PyQt5.uic import loadUi
+from PyQt5.QtGui import QIcon
 from pony.orm import *
 
 COLOR_WINDOW = "255, 255, 51"
-
-
-city_class = loadUiType(getcwd() + '/ui/city.ui')[0]
 
 
 class CountryVendorList(list.ListItems):
@@ -60,10 +57,10 @@ class CityVendorList(list.ListItems):
         self.sql_set_list()
 
 
-class CityVendorWindow(QDialog, city_class):
+class CityVendorWindow(QDialog):
     def __init__(self, city_id=None):
         super(CityVendorWindow, self).__init__()
-        self.setupUi(self)
+        loadUi(getcwd() + '/ui/city.ui', self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
         self.widget.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW)
 
@@ -80,7 +77,7 @@ class CityVendorWindow(QDialog, city_class):
             city = CityVendor[self.id]
             self.le_name.setText(city.name)
             self.le_note.setText(city.note)
-            self.cb_country.setCurrentText(self.city.country.name)
+            self.cb_country.setCurrentText(city.country.name)
 
     @db_session
     def ui_acc(self):

@@ -1,19 +1,33 @@
 from os import getcwd
 from PyQt5.QtWidgets import QMainWindow, QMdiSubWindow
-from PyQt5.uic import loadUiType
+from PyQt5.uic import loadUi
 from PyQt5.QtGui import QIcon
-from form import country, shipping, payment, vendor, sewing_machine, parts
-
-main_class = loadUiType(getcwd() + '/ui/main_window.ui')[0]
+from form import country, shipping, payment, vendor, sewing_machine, parts, supply
 
 
-class MainWindow(QMainWindow, main_class):
-    def __init__(self, *args):
-        super(MainWindow, self).__init__(*args)
-        self.setupUi(self)
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super(MainWindow, self).__init__()
+        loadUi(getcwd() + '/ui/main_window.ui', self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
 
         self.show()
+
+    def ui_view_supply(self):
+        self.supply = supply.SupplyList()
+        self.sub_supply = QMdiSubWindow()
+        self.sub_supply.setWidget(self.supply)
+        self.mdi.addSubWindow(self.sub_supply)
+        self.sub_supply.resize(self.supply.size())
+        self.sub_supply.show()
+
+    def ui_view_supply_other_cost(self):
+        self.supply_other_cost = supply.SupplyCostOtherList()
+        self.sub_supply_other_cost = QMdiSubWindow()
+        self.sub_supply_other_cost.setWidget(self.supply_other_cost)
+        self.mdi.addSubWindow(self.sub_supply_other_cost)
+        self.sub_supply_other_cost.resize(self.supply_other_cost.size())
+        self.sub_supply_other_cost.show()
 
     def ui_view_country(self):
         self.country = country.CountryVendorList()

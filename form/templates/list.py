@@ -1,18 +1,15 @@
 from os import getcwd
 from form.templates import item_2
-from PyQt5.uic import loadUiType
+from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QListWidgetItem, QMainWindow, QMessageBox
 from PyQt5.QtGui import QIcon
 from pony.orm import *
 
 
-list_class = loadUiType(getcwd() + '/ui/templates ui/list/list_item.ui')[0]
-
-
-class ListItems(QMainWindow, list_class):
+class ListItems(QMainWindow):
     def __init__(self, main_class=0, dc_select=False):
         super(ListItems, self).__init__()
-        self.setupUi(self)
+        loadUi(getcwd() + '/ui/templates ui/list/list_item.ui', self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
 
         self.m_class = main_class

@@ -1,0 +1,152 @@
+!!! При вайпе !!!
+1 - Для нарезки бейки выбрать поставщика для заказа!
+2 - выставить пути к папкам в настройках
+3 - высдавить доплату за проезд в настройках
+4 - IP сервера печати бирок в print_label
+
+
+date.strftime("%d.%m.%Y")
+date.strftime("%d.%m.%Y %H:%M:%S")
+date.toPyDate()
+dateTine.toPyDateTime()
+.toString("dd.MM.yyyy")
+
+
+
+self.done()
+
+
+
+
+need = [id[1] for id in check_position if id[0] == position[0]][0]
+
+
+
+
+if dict["pay"] == 1:
+    color = QBrush(QColor(62, 181, 240, 255))
+else:
+    color = QBrush(QColor(62, 240, 130, 255))
+
+   new_table_item.setBackground(color)
+
+color_yes = QBrush(QColor(150, 255, 161, 255))  зеленый
+color_yes = QBrush(QColor(255, 255, 153, 255))  желтый
+color_no = QBrush(QColor(252, 141, 141, 255))   Алый
+
+
+
+CASE
+  WHEN SUM(IF(pack.Date_Coplete IS NULL, 1, 0)) > 0 THEN '0'
+  ELSE '1'
+END
+
+
+
+import re
+re.sub(r'(?<=\d)(?=(\d\d\d)+\b.)', ' ', str(round(operations_price / value, 4))
+
+
+
+rest = cut[2] if cut[2] is not None else 0
+
+
+
+
+self.tw_info.clearContents()
+self.tw_info.setRowCount(0)
+
+for row, info in enumerate(sql_info):
+    self.tw_info.insertRow(row)
+    if info[1] >= 0:
+        color = QBrush(QColor(150, 255, 161, 255))
+    else:
+        color = QBrush(QColor(252, 141, 141, 255))
+
+    new_table_item = QTableWidgetItem(str(info[0]))
+    new_table_item.setData(-2, info[4])
+    new_table_item.setBackground(color)
+    self.tw_info.setItem(row, 0, new_table_item)
+
+
+
+self.new_supply = MaterialSupply(self)
+self.new_supply.setWindowModality(Qt.ApplicationModal)
+self.new_supply.show()
+
+
+Управление доступами!
+- отключение общего меню в баре = self.menu_3.setEnabled(False)
+
+
+Диологовое окно с окошком подробностей. Исполльзую в операциях!
+msg = QMessageBox()
+msg.setIcon(QMessageBox.Information)
+msg.setWindowTitle("Совпадения")
+msg.setText("Найдено %s совпадений" % len(sql_art))
+msg.setDetailedText(text)
+msg.exec()
+
+
+==транзакции ткани==
+- бейка
+-- На нарезку бейки № %s (140) + =
+-- Отмена нарезки бейки № %s (141) + =
+
+- крой
+-- %s - Увеличение обрези в крое (130) + =
+-- %s - Уменьшение обрези в крое (131) + =
+-- %s - Возврат ткани из за удаления кроя (132) + =
+-- %s - Забор ткани из за смены ткани (133) + =
+-- %s - Возврат ткани из за смены ткани (134) + =
+
+- пачки
+-- %s/%s - Новая пачка в крое (120) + =
+-- %s/%s - Удаление пачки из кроя (121) + =
+-- %s/%s - Уменьшение ткани в пачке (123) + =
+-- %s/%s - Увеличение ткани в пачке (124) + =
+-- %s/%s - Удаление доп. ткани (125) + =
+-- %s/%s - Добавление доп. ткани (126) + =
+
+- приход
+-- Заказ %s - новый приход (110) + + =
+-- Заказ %s - изменение прихода(111) + =
+
+- прочее
+-- Продажа ткани работнику № 168, ID вычета 11 (150) + =
+-- Отмена транзакции №  (151) + =
+-- (152)
+
+==транзакции фурнитуры==
+- бейка
+-- Нарезка бейки №%s (240) + =
+
+- пачки
+-- %s/%s - Добавление фурнитуры в пачку (220) + =
+-- %s/%s - Удаление пачки (221) + =
+-- %s/%s - Увеличение фурнитуры в пачке (224) + =
+-- %s/%s - Уменьшение фурнитуры в пачке (223) + =
+-- %s/%s - Удаление фурнитуры в пачке (222) + =
+
+- приход
+-- Заказ %s - новый приход (210) + + =
+-- Заказ %s - изменение прихода (211) + =
+
+- прочее
+-- (250)
+
+== продукция ==
+- заказ
+-- Заказ %s - отгружен (310) + =
+-- Заказ %s - отменен (311) + =
+
+- пачки
+-- %s/%s - Принята пачка (320) + + =
+-- %s/%s - Пачка вернулась со склада (321) + =
+-- %s/%s - Изменено кол-во принятой пачки (322) + =
+
+- прочее
+-- Коректировка из программы (350) + =
+-- Коректировка перешития что перешили - (351) + =
+-- Коректировка перешития На что перешили + (352) + =
+-- (353)

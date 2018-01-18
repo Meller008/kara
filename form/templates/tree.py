@@ -1,25 +1,21 @@
 from os import getcwd
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QDialog, QMessageBox, QTableWidgetItem, QMainWindow, QTreeWidgetItem, QFileDialog, QTreeWidgetItem
-from PyQt5.uic import loadUiType
+from PyQt5.uic import loadUi
 from my_class import print_qt, orm_class
 from function import to_excel, table_to_html
 from pony.orm import *
 from my_class.orm_class import Parts, PartsTree, ManufacturerParts
 from treelib import Tree
 
-tree_class = loadUiType(getcwd() + '/ui/templates ui/tree_table/tree.ui')[0]
-change_tree_item_class = loadUiType(getcwd() + '/ui/templates ui/tree_table/add_tree_item.ui')[0]
-transfer_class = loadUiType(getcwd() + '/ui/templates ui/tree_table/tree_transfer.ui')[0]
-
 
 COLOR_WINDOW = "255, 255, 255"
 
 
-class TreeList(QMainWindow, tree_class):
+class TreeList(QMainWindow):
     def __init__(self, main_class=0, dc_select=False, open_id=None):
         super(TreeList, self).__init__()
-        self.setupUi(self)
+        loadUi(getcwd() + '/ui/templates ui/tree_table/tree.ui', self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
         self.main = main_class
         self.dc_select = dc_select
@@ -311,9 +307,7 @@ class TreeList(QMainWindow, tree_class):
         if not self.dc_select:
             self.ui_change_table_item(item.data(5))
         else:
-            # что хотим получить ставим всместо 0
-            item = (self.table_widget.item(item.row(), 0).text(), item.data(5))
-            self.main.of_tree_select_operation(item)
+            self.main.of_tree_select_operation(item.data(5))
             self.close()
             self.destroy()
 
@@ -394,10 +388,10 @@ class TreeList(QMainWindow, tree_class):
             to_excel.table_to_excel(self.table_widget, path[0])
 
 
-class ChangeTreeItem(QDialog, change_tree_item_class):
+class ChangeTreeItem(QDialog):
     def __init__(self):
         super(ChangeTreeItem, self).__init__()
-        self.setupUi(self)
+        loadUi(getcwd() + '/ui/templates ui/tree_table/add_tree_item.ui', self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
 
     def set_settings(self, setting):
@@ -411,10 +405,10 @@ class ChangeTreeItem(QDialog, change_tree_item_class):
                 getattr(self, name).setText(value)
 
 
-class TreeTransfer(QDialog, transfer_class):
+class TreeTransfer(QDialog):
     def __init__(self, orm):
         super(TreeTransfer, self).__init__()
-        self.setupUi(self)
+        loadUi(getcwd() + '/ui/templates ui/tree_table/tree_transfer.ui', self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
         self.tree_orm = orm
         self.set_tree_info()
