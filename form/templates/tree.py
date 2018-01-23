@@ -1,12 +1,12 @@
 from os import getcwd
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QDialog, QMessageBox, QTableWidgetItem, QMainWindow, QTreeWidgetItem, QFileDialog, QTreeWidgetItem
-from PyQt5.uic import loadUi
-from my_class import print_qt, orm_class
-from function import to_excel, table_to_html
-from pony.orm import *
-from my_class.orm_class import Parts, PartsTree, ManufacturerParts
 from treelib import Tree
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QDialog, QMessageBox, QTableWidgetItem, QMainWindow, QFileDialog, QTreeWidgetItem
+from PyQt5.uic import loadUi
+from pony.orm import *
+from my_class.orm_class import Parts, PartsTree
+from my_class import print_qt
+from function import to_excel, table_to_html
 
 
 COLOR_WINDOW = "255, 255, 255"
@@ -95,7 +95,7 @@ class TreeList(QMainWindow):
     def set_tree_info(self):  # заполняем девево
         self.tree = Tree()
 
-        all = self.tree_orm.select().order_by(self.tree_orm.parent, desc(self.tree_orm.position))[:]
+        all = self.tree_orm.select().order_by(self.tree_orm.parent, self.tree_orm.position)[:]
 
         self.tree_widget.clear()
 
@@ -103,11 +103,10 @@ class TreeList(QMainWindow):
         self.tree.create_node("main", 0)
         for tree_item in all:
             self.tree.create_node(tree_item.name, tree_item.id, parent=tree_item.parent)
-
         else:
             self.tree.create_node("Показать всё", "all", parent=0, data="all")
 
-        # Берем главные разделы и начинаем обходить их детей!
+        # Берем созданое дерево и строим его UI обходя все ветви
         for node in self.tree.children(0):
             root_item = self.search(node.identifier)
             self.tree_widget.addTopLevelItem(root_item)
@@ -245,19 +244,19 @@ class TreeList(QMainWindow):
             QMessageBox.critical(self, "Ошибка изменения", "Выделите элемент который хотите изменить", QMessageBox.Ok)
             return False
 
+        tree = self.tree_orm[id_select]
+
         info = ChangeTreeItem()
         info.set_settings(self.set_new_win_tree)
         info.rb_old.close()
         info.rb_new.close()
         info.le_name.setText(parent_name)
+        info.le_position.setText(str(tree.position))
         if info.exec() == 0:
             return False
 
-        pos = info.le_position.text() or None
-
-        tree = self.tree_orm[id_select]
         tree.name = info.le_name.text()
-        tree.position = pos
+        tree.position = info.le_position.text() or None
         commit()
 
         self.set_tree_info()

@@ -1,23 +1,24 @@
 from os import getcwd
 from form.templates import list
-from my_class.orm_class import CityVendor, CountryVendor
+from my_class.orm_class import CityVendor, CountryVendor, CityClient
 from PyQt5.QtWidgets import QMessageBox, QDialog
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QIcon
 from pony.orm import *
 
-COLOR_WINDOW = "255, 255, 51"
+COLOR_WINDOW_VENDOR = "255, 255, 51"
+COLOR_WINDOW_CLIENT = "255, 215, 0"
 
 
 class CountryVendorList(list.ListItems):
     def set_settings(self):
         self.setWindowTitle("Страны поставщиков")  # Имя окна
-        self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW)  # Цвет бара
+        self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW_VENDOR)  # Цвет бара
 
         self.item = CountryVendor
 
         self.set_new_win = {"WinTitle": "Страна",
-                            "WinColor": "(%s)" % COLOR_WINDOW,
+                            "WinColor": "(%s)" % COLOR_WINDOW_VENDOR,
                             "lb_name": "Название",
                             "lb_note": "Заметка"}
 
@@ -25,7 +26,7 @@ class CountryVendorList(list.ListItems):
 class CityVendorList(list.ListItems):
     def set_settings(self):
         self.setWindowTitle("Города поставщиков")  # Имя окна
-        self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW)  # Цвет бара
+        self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW_VENDOR)  # Цвет бара
 
         self.item = CityVendor
 
@@ -62,7 +63,7 @@ class CityVendorWindow(QDialog):
         super(CityVendorWindow, self).__init__()
         loadUi(getcwd() + '/ui/city.ui', self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
-        self.widget.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW)
+        self.widget.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW_VENDOR)
 
         self.id = city_id
 
@@ -100,6 +101,19 @@ class CityVendorWindow(QDialog):
     def ui_can(self):
         self.close()
         self.destroy()
+
+
+class CityClientList(list.ListItems):
+    def set_settings(self):
+        self.setWindowTitle("Города клиентов")  # Имя окна
+        self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW_CLIENT)  # Цвет бара
+
+        self.item = CityClient
+
+        self.set_new_win = {"WinTitle": "Страна",
+                            "WinColor": "(%s)" % COLOR_WINDOW_CLIENT,
+                            "lb_name": "Название",
+                            "lb_note": "Заметка"}
 
 
 

@@ -1,15 +1,14 @@
-from os import getcwd, path, mkdir, remove
-from PyQt5.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QTableWidgetItem, QDialog
+from os import getcwd, path, mkdir
+from collections import namedtuple
+from PyQt5.QtWidgets import QMainWindow, QMessageBox, QTableWidgetItem, QDialog
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QIcon, QImage, QPixmap, QBrush, QColor
 from PyQt5.QtCore import Qt
 from pony.orm import *
-from my_class.orm_class import Parts, PartsTree, ManufacturerParts, SewingMachine, Supply, SupplyPosition, Vendor, CostOther, SupplyCostOther
-from function.str_to import str_to_decimal, str_to_decimal
-from form import sewing_machine, vendor, parts
+from my_class.orm_class import Parts, Supply, SupplyPosition, Vendor, CostOther, SupplyCostOther
+from form import vendor, parts
 from form.templates import table, list
-from collections import namedtuple
-from decimal import Decimal
+from function.str_to import str_to_decimal
 
 
 COLOR_WINDOW_SUPPLY = "204, 255, 0"
@@ -28,12 +27,12 @@ class SupplyList(table.TableList):
         self.pb_filter.deleteLater()
 
         # Названия колонк (Имя, Длинна)
-        self.table_header_name = (("№", 30), ("Дата", 70))
+        self.table_header_name = (("№", 30), ("Поставщик", 75), ("Дата заказа", 80), ("Дата прихода", 80), ("Позиций", 55), ("Сумма", 75))
 
         self.item = Supply  # Класс который будем выводить! Без скобок!
 
         # сам запрос
-        self.query = select((s.id, s.date_order) for s in Supply)
+        self.query = select((s.id, s.id, s.vendor.name, s.date_order, s.date_shipping, s.value_position, s.all_sum) for s in Supply)
 
     def ui_add_table_item(self):  # Добавить предмет
         self.add_supply = SupplyBrows(self)
@@ -357,7 +356,7 @@ class SupplyBrows(QMainWindow):
                                           position.price_vendor,
                                           position.price_ru,
                                           new_price_cost,
-                                          round(100 / (position.price_sell / new_price_cost), 2),
+                                          round((position.price_sell - new_price_cost) / new_price_cost * 100, 2),
                                           position.price_sell,
                                           round(position.price_sell - new_price_cost, 2),
                                           position.sum_ru,
@@ -455,6 +454,14 @@ class SupplyBrows(QMainWindow):
             CostOther[id].delete()
         for id in self.del_position_id:
             SupplyPosition[id].delete()
+
+        self.main.ui_update()
+        self.close()
+        self.destroy()
+
+    def ui_can(self):
+        self.close()
+        self.destroy()
 
     @db_session
     def of_select_vendor(self, vendor_id):  # Вставляем поставщика + его города и способы доставки и оплаты
@@ -689,7 +696,7 @@ class SupplyPositionBrows(QDialog):
         price_sel = str_to_decimal(self.le_price_sel.text())
 
         if price_a_rate and price_sel:
-            self.le_markup.setText(str(round(100 / (price_sel / price_a_rate), 2)))
+            self.le_markup.setText(str(round((price_sel - price_a_rate) / price_a_rate * 100, 2)))
 
         self.calc_profit()
 

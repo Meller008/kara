@@ -2,7 +2,7 @@ from os import getcwd
 from PyQt5.QtWidgets import QMainWindow, QMdiSubWindow
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QIcon
-from form import country, shipping, payment, vendor, sewing_machine, parts, supply
+from form import country, shipping, payment, vendor, sewing_machine, parts, supply, clients
 
 
 class MainWindow(QMainWindow):
@@ -101,6 +101,14 @@ class MainWindow(QMainWindow):
         self.sub_parts_list.resize(self.parts_list.size())
         self.sub_parts_list.show()
 
+    def ui_view_parts_catalog(self):
+        self.parts_catalog = parts.PartsCatalog()
+        self.sub_parts_catalog = QMdiSubWindow()
+        self.sub_parts_catalog.setWidget(self.parts_catalog)
+        self.mdi.addSubWindow(self.sub_parts_catalog)
+        self.sub_parts_catalog.resize(self.parts_catalog.size())
+        self.sub_parts_catalog.show()
+
     def ui_view_parts_manufacturer_list(self):
         self.parts_manufacturer_list = parts.PartsManufacturer()
         self.sub_parts_manufacturer_list = QMdiSubWindow()
@@ -109,4 +117,34 @@ class MainWindow(QMainWindow):
         self.sub_parts_manufacturer_list.resize(self.parts_manufacturer_list.size())
         self.sub_parts_manufacturer_list.show()
 
+    def ui_view_shipping_client_list(self):
+        self.shipping_client_list = shipping.ShippingMethodClientList()
+        self.sub_shipping_client_list = QMdiSubWindow()
+        self.sub_shipping_client_list.setWidget(self.shipping_client_list)
+        self.mdi.addSubWindow(self.sub_shipping_client_list)
+        self.sub_shipping_client_list.resize(self.shipping_client_list.size())
+        self.sub_shipping_client_list.show()
 
+    def ui_view_payment_client_list(self):
+        self.payment_client_list = payment.PaymentMethodClientList()
+        self.sub_payment_client_list = QMdiSubWindow()
+        self.sub_payment_client_list.setWidget(self.payment_client_list)
+        self.mdi.addSubWindow(self.sub_payment_client_list)
+        self.sub_payment_client_list.resize(self.payment_client_list.size())
+        self.sub_payment_client_list.show()
+
+    def ui_view_city_client_list(self):
+        self.city_client_list = country.CityClientList()
+        self.sub_city_client_list = QMdiSubWindow()
+        self.sub_city_client_list.setWidget(self.city_client_list)
+        self.mdi.addSubWindow(self.sub_city_client_list)
+        self.sub_city_client_list.resize(self.city_client_list.size())
+        self.sub_city_client_list.show()
+
+    def ui_view_client_list(self):
+        self.client_list = clients.ClientList()
+        self.sub_client_list = QMdiSubWindow()
+        self.sub_client_list.setWidget(self.client_list)
+        self.mdi.addSubWindow(self.sub_client_list)
+        self.sub_client_list.resize(self.client_list.size())
+        self.sub_client_list.show()

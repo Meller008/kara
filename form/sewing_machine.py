@@ -1,22 +1,28 @@
-from form.templates import list, table
+from os import getcwd
+from decimal import Decimal
+from datetime import date
+import re
+from pony.orm import *
 from my_class.orm_class import ManufacturerSewingMachine, TypeSewingMachine, SewingMachine
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt
-from os import getcwd
-from PyQt5.QtWidgets import QMainWindow, QMessageBox, QListWidgetItem
+from PyQt5.QtWidgets import QMainWindow, QMessageBox, QListWidgetItem, QTableWidgetItem
 from PyQt5.QtGui import QIcon
-from pony.orm import *
+from form.templates import list, table
 
 COLOR_WINDOW_MANUFACTURER = "102, 0, 255"
 COLOR_WINDOW_TYPE = "51, 51, 255"
 COLOR_WINDOW_MACHINE = "102, 153, 255"
 
+db = Database()
+db.bind(provider='mysql', host='192.168.1.24', user='kara', passwd='Aa088011', db='kara')
+
 
 class SewingMachineList(table.TableList):
     def set_settings(self):
 
-        self.setWindowTitle("Поставщики")  # Имя окна
-        self.resize(400, 270)
+        self.setWindowTitle("Оборудование")  # Имя окна
+        self.resize(450, 400)
         self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW_MACHINE)  # Цвет бара
 
         self.pb_copy.deleteLater()
@@ -24,12 +30,17 @@ class SewingMachineList(table.TableList):
         self.pb_filter.deleteLater()
 
         # Названия колонк (Имя, Длинна)
-        self.table_header_name = (("Название", 100), ("Промзводитель", 100))
+        self.table_header_name = (("Название", 100), ("Производитель", 100), ("Типы", 200))
 
         self.item = SewingMachine  # Класс который будем выводить! Без скобок!
 
         # сам запрос
-        self.query = select((s.id, s.name, s.manufacturer.name) for s in SewingMachine)
+        self.query = """SELECT sewingmachine.id, sewingmachine.name, manufacturersewingmachine.name, GROUP_CONCAT(typesewingmachine.name)
+                        FROM typesewingmachine
+                          LEFT JOIN sewingmachine_typesewingmachine ON typesewingmachine.id = sewingmachine_typesewingmachine.typesewingmachine
+                          LEFT JOIN sewingmachine ON sewingmachine_typesewingmachine.sewingmachine = sewingmachine.id
+                          LEFT JOIN manufacturersewingmachine ON sewingmachine.manufacturer = manufacturersewingmachine.id
+                          GROUP BY sewingmachine"""
 
     def ui_add_table_item(self):  # Добавить предмет
         self.machine_window = SewingMachineBrows(self)
@@ -58,6 +69,27 @@ class SewingMachineList(table.TableList):
             self.main.of_select_sewing_machine(item.data(5))
             self.close()
             self.destroy()
+
+    @db_session
+    def set_table_info(self):
+
+        self.table_widget.clearContents()
+        self.table_widget.setRowCount(0)
+
+        list_table_item = db.select(self.query)
+
+        for table_typle in list_table_item:
+            self.table_widget.insertRow(self.table_widget.rowCount())
+            for column in range(1, len(table_typle)):
+                if isinstance(table_typle[column], Decimal):
+                    text = re.sub(r'(?<=\d)(?=(\d\d\d)+\b.)', ' ', str(table_typle[column]))
+                elif isinstance(table_typle[column], date):
+                    text = table_typle[column].strftime("%d.%m.%Y")
+                else:
+                    text = str(table_typle[column])
+                item = QTableWidgetItem(text)
+                item.setData(5, table_typle[0])
+                self.table_widget.setItem(self.table_widget.rowCount() - 1, column - 1, item)
 
 
 class SewingMachineBrows(QMainWindow):
@@ -131,6 +163,7 @@ class SewingMachineBrows(QMainWindow):
         machine_class.type.remove(map(lambda x: TypeSewingMachine[x], self.del_type))
         machine_class.type.add(map(lambda row: TypeSewingMachine[self.lw_type.item(row).data(5)], range(self.lw_type.count())))
 
+        self.main.ui_update()
         self.close()
         self.destroy()
 

@@ -798,6 +798,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pb_can</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_can()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>741</x>
+     <y>438</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>738</x>
+     <y>517</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ui_view_vendor()</slot>
@@ -809,5 +825,6 @@
   <slot>ui_del_position()</slot>
   <slot>ui_calc_supply()</slot>
   <slot>ui_acc()</slot>
+  <slot>ui_can()</slot>
  </slots>
 </ui>
