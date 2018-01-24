@@ -516,8 +516,8 @@
    <slot>ui_view_vendor()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>116</x>
-     <y>34</y>
+     <x>90</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
      <x>119</x>
@@ -580,8 +580,8 @@
    <slot>ui_view_parts_list()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>111</x>
-     <y>56</y>
+     <x>109</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
      <x>-96</x>
@@ -596,8 +596,8 @@
    <slot>ui_view_parts_manufacturer_list()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>203</x>
-     <y>56</y>
+     <x>184</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
      <x>136</x>
@@ -612,8 +612,8 @@
    <slot>ui_view_country()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>195</x>
-     <y>34</y>
+     <x>168</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
      <x>142</x>
@@ -628,8 +628,8 @@
    <slot>ui_view_payment_method()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>334</x>
-     <y>42</y>
+     <x>318</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
      <x>364</x>
@@ -644,8 +644,8 @@
    <slot>ui_view_shipping_method()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>397</x>
-     <y>42</y>
+     <x>392</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
      <x>408</x>
@@ -660,8 +660,8 @@
    <slot>ui_view_city()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>276</x>
-     <y>33</y>
+     <x>243</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
      <x>282</x>
@@ -676,8 +676,8 @@
    <slot>ui_view_supply()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>49</x>
-     <y>32</y>
+     <x>15</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
      <x>45</x>
@@ -692,8 +692,8 @@
    <slot>ui_view_supply_other_cost()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>494</x>
-     <y>39</y>
+     <x>468</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
      <x>486</x>
@@ -781,6 +781,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_5</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_view_order_list()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>28</x>
+     <y>40</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-51</x>
+     <y>36</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ui_view_country()</slot>
@@ -800,5 +816,6 @@
   <slot>ui_view_payment_client_list()</slot>
   <slot>ui_view_city_client_list()</slot>
   <slot>ui_view_client_list()</slot>
+  <slot>ui_view_order_list()</slot>
  </slots>
 </ui>

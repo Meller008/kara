@@ -78,6 +78,7 @@ class ClientBrows(QMainWindow):
             cl = Client[self.id]
             
             self.le_name.setText(cl.name)
+            self.le_full_name.setText(cl.full_name)
             self.le_legal_address.setText(cl.addres_legal)
             self.le_actual_address.setText(cl.addres_actual)
             self.le_inn.setText(str(cl.inn))
@@ -102,6 +103,7 @@ class ClientBrows(QMainWindow):
 
         value = {
                 "name": self.le_name.text(),
+                "full_name": self.le_full_name.text(),
                 "addres_legal": self.le_legal_address.text(),
                 "addres_actual": self.le_actual_address.text(),
                 "inn": self.le_inn.text(),
@@ -123,7 +125,7 @@ class ClientBrows(QMainWindow):
             c = Client[self.id]
             c.set(**value)
         else:
-            c = Client(**value)
+            Client(**value)
 
         self.main.ui_update()
         self.close()

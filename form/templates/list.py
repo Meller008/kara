@@ -88,7 +88,11 @@ class ListItems(QMainWindow):
         if result == 16384:
             try:
                 id_select = self.lw_list.selectedItems()[0].data(5)
-                self.item[int(id_select)].delete()
+                try:
+                    self.item[int(id_select)].delete()
+                except ConstraintError:
+                    QMessageBox.critical(self, "Ошибка Удаления", "Этот элемент уже используется", QMessageBox.Ok)
+                    return False
                 self.sql_set_list()
             except:
                 QMessageBox.critical(self, "Ошибка", "Выберете элемент", QMessageBox.Ok)

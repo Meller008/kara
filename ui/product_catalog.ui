@@ -670,6 +670,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tw_product_warehouse</sender>
+   <signal>itemDoubleClicked(QTableWidgetItem*)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_dc_warehouse()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>570</x>
+     <y>605</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>572</x>
+     <y>773</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ui_change_manufacturer_machine()</slot>
@@ -679,5 +695,6 @@
   <slot>ui_change_product_type()</slot>
   <slot>ui_set_product()</slot>
   <slot>ui_change_article()</slot>
+  <slot>ui_dc_warehouse()</slot>
  </slots>
 </ui>

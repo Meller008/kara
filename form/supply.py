@@ -3,7 +3,7 @@ from collections import namedtuple
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QTableWidgetItem, QDialog
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QIcon, QImage, QPixmap, QBrush, QColor
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QDate
 from pony.orm import *
 from my_class.orm_class import Parts, Supply, SupplyPosition, Vendor, CostOther, SupplyCostOther
 from form import vendor, parts
@@ -20,7 +20,7 @@ class SupplyList(table.TableList):
     def set_settings(self):
         self.setWindowTitle("Список")  # Имя окна
         self.resize(500, 270)
-        self.toolBar.setStyleSheet("background-color: rgb(%s);" % "204, 255, 0")  # Цвет бара
+        self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW_SUPPLY)  # Цвет бара
 
         self.pb_copy.deleteLater()
         self.pb_other.deleteLater()
@@ -95,6 +95,9 @@ class SupplyBrows(QMainWindow):
         self.tw_position.horizontalHeader().resizeSection(7, 75)
         self.tw_position.horizontalHeader().resizeSection(8, 75)
         self.tw_position.horizontalHeader().resizeSection(9, 75)
+
+        self.de_date_order.setDate(QDate.currentDate())
+        self.de_date_shipping.setDate(QDate.currentDate())
 
         if self.id:  # Если есть ID то получим приход
             supply = Supply[self.id]
@@ -549,6 +552,8 @@ class SupplyPositionBrows(QDialog):
             self.le_price_profit.setText(str(self.position.price_profit))
             self.le_sum_ru.setText(str(self.position.sum_ru))
             self.le_sum_a_cost.setText(str(self.position.sum_cost))
+
+            self.tb_product.setEnabled(False)
 
             self.ui_calc_sum()
             self.ui_calc_markup_percent()

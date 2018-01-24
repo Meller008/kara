@@ -83,10 +83,14 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QLineEdit" name="lineEdit"/>
+         <widget class="QLineEdit" name="le_id">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QDateEdit" name="dateEdit">
+         <widget class="QDateEdit" name="de_date">
           <property name="calendarPopup">
            <bool>true</bool>
           </property>
@@ -98,7 +102,11 @@
            <number>2</number>
           </property>
           <item>
-           <widget class="QLineEdit" name="lineEdit_2"/>
+           <widget class="QLineEdit" name="le_client">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QToolButton" name="toolButton">
@@ -109,14 +117,11 @@
           </item>
          </layout>
         </item>
-        <item row="3" column="1">
-         <widget class="QComboBox" name="comboBox"/>
-        </item>
         <item row="4" column="1">
-         <widget class="QComboBox" name="comboBox_2"/>
+         <widget class="QComboBox" name="cb_payment"/>
         </item>
         <item row="5" column="1">
-         <widget class="QPlainTextEdit" name="plainTextEdit">
+         <widget class="QPlainTextEdit" name="le_note">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
             <horstretch>0</horstretch>
@@ -137,6 +142,9 @@
           </property>
          </widget>
         </item>
+        <item row="3" column="1">
+         <widget class="QComboBox" name="cb_shipping"/>
+        </item>
        </layout>
       </item>
       <item row="0" column="2">
@@ -155,7 +163,14 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QLineEdit" name="lineEdit_3"/>
+         <widget class="QLineEdit" name="le_shipping">
+          <property name="text">
+           <string>0</string>
+          </property>
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="label_8">
@@ -165,7 +180,11 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEdit_4"/>
+         <widget class="QLineEdit" name="le_position_sum">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="2" column="0">
          <widget class="QLabel" name="label_9">
@@ -175,7 +194,11 @@
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QLineEdit" name="lineEdit_5"/>
+         <widget class="QLineEdit" name="le_discount_sum">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="3" column="0">
          <widget class="QLabel" name="label_10">
@@ -185,7 +208,11 @@
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QLineEdit" name="lineEdit_6"/>
+         <widget class="QLineEdit" name="le_all_sum">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="4" column="0">
          <widget class="QLabel" name="label_11">
@@ -195,7 +222,11 @@
          </widget>
         </item>
         <item row="4" column="1">
-         <widget class="QLineEdit" name="lineEdit_7"/>
+         <widget class="QLineEdit" name="le_value_position">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="5" column="0">
          <widget class="QLabel" name="label_12">
@@ -205,7 +236,11 @@
          </widget>
         </item>
         <item row="5" column="1">
-         <widget class="QLineEdit" name="lineEdit_8"/>
+         <widget class="QLineEdit" name="le_discount_percent">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
         </item>
         <item row="6" column="0">
          <widget class="QLabel" name="label_13">
@@ -215,10 +250,14 @@
          </widget>
         </item>
         <item row="6" column="1">
-         <widget class="QLineEdit" name="lineEdit_9"/>
+         <widget class="QLineEdit" name="le_profit_sum">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="7" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="pb_calc">
           <property name="text">
            <string>Расчитать</string>
           </property>
@@ -284,7 +323,62 @@
      </widget>
     </item>
     <item row="3" column="0">
-     <widget class="QTableWidget" name="tableWidget"/>
+     <widget class="QTableWidget" name="tw_position">
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="alternatingRowColors">
+       <bool>true</bool>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderDefaultSectionSize">
+       <number>20</number>
+      </attribute>
+      <attribute name="verticalHeaderMinimumSectionSize">
+       <number>18</number>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>Товар</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Заказ</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Кол-во</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Цена</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Сумма</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Прибыль</string>
+       </property>
+      </column>
+     </widget>
     </item>
     <item row="4" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -335,8 +429,169 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="pb_doc"/>
   </widget>
+  <action name="pb_doc">
+   <property name="text">
+    <string>Документы</string>
+   </property>
+  </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>toolButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_view_client()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>280</x>
+     <y>68</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>289</x>
+     <y>-95</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton_11</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_add_position()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>15</x>
+     <y>206</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-54</x>
+     <y>212</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_can</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_can()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>473</x>
+     <y>479</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>479</x>
+     <y>569</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_acc</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_acc()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>410</x>
+     <y>477</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>409</x>
+     <y>601</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton_12</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_change_position()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>95</x>
+     <y>209</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-63</x>
+     <y>162</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tw_position</sender>
+   <signal>cellDoubleClicked(int,int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_change_position()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>54</x>
+     <y>291</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-128</x>
+     <y>301</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton_13</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_del_position()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>177</x>
+     <y>210</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-59</x>
+     <y>113</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_calc</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_calc()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>497</x>
+     <y>181</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>619</x>
+     <y>185</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_doc</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_view_doc()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>265</x>
+     <y>245</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>ui_view_client()</slot>
+  <slot>ui_add_position()</slot>
+  <slot>ui_can()</slot>
+  <slot>ui_acc()</slot>
+  <slot>ui_change_position()</slot>
+  <slot>ui_del_position()</slot>
+  <slot>ui_calc()</slot>
+  <slot>ui_view_doc()</slot>
+ </slots>
 </ui>

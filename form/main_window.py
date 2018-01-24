@@ -2,7 +2,7 @@ from os import getcwd
 from PyQt5.QtWidgets import QMainWindow, QMdiSubWindow
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QIcon
-from form import country, shipping, payment, vendor, sewing_machine, parts, supply, clients
+from form import country, shipping, payment, vendor, sewing_machine, parts, supply, clients, order
 
 
 class MainWindow(QMainWindow):
@@ -148,3 +148,11 @@ class MainWindow(QMainWindow):
         self.mdi.addSubWindow(self.sub_client_list)
         self.sub_client_list.resize(self.client_list.size())
         self.sub_client_list.show()
+
+    def ui_view_order_list(self):
+        self.order_list = order.OrderList()
+        self.sub_order_list = QMdiSubWindow()
+        self.sub_order_list.setWidget(self.order_list)
+        self.mdi.addSubWindow(self.sub_order_list)
+        self.sub_order_list.resize(self.order_list.size())
+        self.sub_order_list.show()

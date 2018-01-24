@@ -88,7 +88,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="toolButton">
+        <widget class="QToolButton" name="tb_product">
          <property name="text">
           <string>...</string>
          </property>
@@ -362,7 +362,7 @@
   <tabstop>le_sum_profit</tabstop>
   <tabstop>le_price_profit</tabstop>
   <tabstop>le_part</tabstop>
-  <tabstop>toolButton</tabstop>
+  <tabstop>tb_product</tabstop>
   <tabstop>pushButton_2</tabstop>
   <tabstop>pushButton</tabstop>
   <tabstop>toolButton_2</tabstop>
@@ -580,7 +580,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>toolButton</sender>
+   <sender>tb_product</sender>
    <signal>clicked()</signal>
    <receiver>Dialog</receiver>
    <slot>ui_view_parts()</slot>

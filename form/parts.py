@@ -277,11 +277,13 @@ class PartsManufacturer(list.ListItems):
 
 
 class PartsCatalog(QMainWindow):
-    def __init__(self):
+    def __init__(self, main=None):
         super(PartsCatalog, self).__init__()
         loadUi(getcwd() + '/ui/product_catalog.ui', self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
         # self.widget.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW_PARTS)
+
+        self.main = main
 
         self.filter_article = None  # Фильтр по артикулу
         self.filter_type_product_id = None  # Фильтр по каталогу продукта
@@ -417,6 +419,12 @@ class PartsCatalog(QMainWindow):
 
         self.filter_machine()
         self.filter_product()
+
+    def ui_dc_warehouse(self, item):
+        if self.main:
+            self.main.of_tree_select_catalog_warehouse(item.data(5))
+            self.close()
+            self.destroy()
 
     @db_session
     def ui_set_product(self, select_item):  # Отобразим товар

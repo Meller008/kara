@@ -57,14 +57,14 @@ class Order(db.Entity):
     client = Required('Client')
     shipping_method = Required('ShippingMethod')
     payment_method = Required('PaymentMethod')
-    order_positions = Set('OrderPosition')
+    order_positions = Set('OrderPosition', cascade_delete=False)
 
 
 class CityClient(db.Entity):
     id = PrimaryKey(int, auto=True)
     name = Required(str, unique=True)
     note = Optional(str)
-    clients = Set('Client')
+    clients = Set('Client', cascade_delete=False)
 
 
 class OrderPosition(db.Entity):
@@ -144,12 +144,12 @@ class Supply(db.Entity):
     all_sum = Optional(Decimal)
     value_position = Required(int)
     note = Optional(str)
-    cost_other = Set('SupplyCostOther')
+    cost_other = Set('SupplyCostOther', cascade_delete=False)
     city = Required('CityVendor')
     shipping = Required(ShippingMethodVendor)
     payment = Required(PaymentMethodVendor)
     vendor = Required(Vendor)
-    position = Set('SupplyPosition')
+    position = Set('SupplyPosition', cascade_delete=False)
 
 
 class SupplyPosition(db.Entity):
@@ -166,12 +166,13 @@ class SupplyPosition(db.Entity):
     sum_cost = Required(Decimal)
     supply = Required(Supply)
     parts = Required(Parts)
-    order_positions = Set(OrderPosition)
+    order_positions = Set(OrderPosition, cascade_delete=False)
 
 
 class Client(db.Entity):
     id = PrimaryKey(int, auto=True)
     name = Required(str)
+    full_name = Optional(str)
     fio = Optional(str)
     phone = Optional(str)
     mail = Optional(str)
@@ -187,7 +188,7 @@ class Client(db.Entity):
     corres_account = Optional(int)
     note = Optional(str)
     city = Required(CityClient)
-    orders = Set(Order)
+    orders = Set(Order, cascade_delete=False)
 
 
 class CityVendor(db.Entity):
@@ -212,14 +213,14 @@ class ShippingMethod(db.Entity):
     id = PrimaryKey(int, auto=True)
     name = Optional(str)
     note = Optional(str)
-    orders = Set(Order)
+    orders = Set(Order, cascade_delete=False)
 
 
 class PaymentMethod(db.Entity):
     id = PrimaryKey(int, auto=True)
     name = Optional(str)
     note = Optional(str)
-    orders = Set(Order)
+    orders = Set(Order, cascade_delete=False)
 
 sql_debug(True)
 db.generate_mapping(create_tables=True, check_tables=True)

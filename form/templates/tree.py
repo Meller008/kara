@@ -319,7 +319,11 @@ class TreeList(QMainWindow):
             except:
                 QMessageBox.critical(self, "Ошибка Удаления", "Выделите элемент который хотите удалить", QMessageBox.Ok)
                 return False
-            self.item[id_item[0].data(5)].delete()
+            try:
+                self.item[id_item[0].data(5)].delete()
+            except ConstraintError:
+                QMessageBox.critical(self, "Ошибка Удаления", "Этот элемент используется", QMessageBox.Ok)
+                return False
             commit()
             self.set_table_info()
             # self.set_tree_info()
