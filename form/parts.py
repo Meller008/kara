@@ -1,7 +1,8 @@
 from os import getcwd, path, mkdir, remove
 import shutil
+from urllib.request import urlretrieve
 from treelib import Tree
-from PyQt5.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QTableWidgetItem, QTreeWidgetItem, QListWidgetItem
+from PyQt5.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QTableWidgetItem, QTreeWidgetItem, QListWidgetItem, QInputDialog
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QIcon, QImage, QPixmap
 from PyQt5.QtCore import Qt
@@ -26,14 +27,14 @@ class PartsList(tree.TreeList):
         self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW_PARTS)  # Цвет бара
 
         # Названия колонк (Имя, Длинна)
-        self.table_header_name = (("Артикул", 100), ("Имя", 150), ("Цена", 200))
+        self.table_header_name = (("Артикул", 60), ("Имя", 150), ("Цена", 60), ("Заметка", 250))
 
         self.tree_orm = PartsTree  # Класс дерева!
 
         # нулевой элемент должен быть ID а первый Parent_ID (ID категории)
         self.item = Parts  # Класс который будем выводить! Без скобок!
         # сам запрос
-        self.query = select((p.id, p.tree, p.name, p.note) for p in Parts)
+        self.query = select((p.id, p.tree, p.id, p.name, p.price, p.note) for p in Parts)
 
         # Настройки окна добавления и редактирования дерева
         self.set_new_win_tree = {"WinTitle": "Добавление категории",
@@ -106,6 +107,7 @@ class PartsWindow(QMainWindow):
             product = Parts[self.id]
             self.le_article.setText(str(product.id))
             self.le_name.setText(product.name)
+            self.le_vaendor_name.setText(product.vendor_name)
             self.le_note.setText(product.note)
             self.le_manufacturer.setText(product.manufacturer.name)
             self.le_manufacturer.setWhatsThis(str(product.manufacturer.id))
@@ -149,6 +151,19 @@ class PartsWindow(QMainWindow):
         self.manufacturer_parts.setWindowModality(Qt.ApplicationModal)
         self.manufacturer_parts.show()
 
+    def ui_web_photo(self):
+        url = QInputDialog.getText(self, "Введите URL фото", "URL")[0]
+
+        if url:
+            path_photo = self.inspection_path(self.id) + "/main.jpg"
+            if path.isfile(path_photo):
+                remove(path_photo)
+
+            urlretrieve(url, path_photo)
+            img = QImage(path_photo)
+            img = img.scaled(self.lb_photo.height(), self.lb_photo.width(), Qt.KeepAspectRatio)
+            self.lb_photo.setPixmap(QPixmap().fromImage(img))
+
     def ui_change_photo(self):
         dir = QFileDialog.getOpenFileNames(self, "Выбор фото", "", "*.jpg")[0]
         if not dir:
@@ -191,6 +206,7 @@ class PartsWindow(QMainWindow):
 
         value = {
                 "name": self.le_name.text(),
+                "vendor_name": self.le_vaendor_name.text(),
                 "note": self.le_note.text(),
                 "manufacturer": self.le_manufacturer.whatsThis(),
                 "tree": self.tree_id,

@@ -583,7 +583,6 @@ class OrderBrows(QMainWindow):
         book.save(path[0])
 
 
-
 class OrderPositionBrows(QDialog):
     def __init__(self, position=None):
         super(OrderPositionBrows, self).__init__()

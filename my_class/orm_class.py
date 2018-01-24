@@ -79,6 +79,7 @@ class OrderPosition(db.Entity):
 class Parts(db.Entity):
     id = PrimaryKey(int, auto=True)
     name = Optional(str)
+    vendor_name = Optional(str)
     note = Optional(str)
     manufacturer = Required('ManufacturerParts')
     price = Required(Decimal)
