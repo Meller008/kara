@@ -6,7 +6,7 @@ from PyQt5.uic import loadUi
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, QDate
 from pony.orm import *
-from my_class.orm_class import Order, OrderPosition, PaymentMethod, ShippingMethod, Client, SupplyPosition
+from my_class.orm_class import Order, OrderPosition, PaymentMethod, ShippingMethod, Client, SupplyPosition, PreOrderPosition, Parts
 from form import parts, clients
 from form.templates import table
 from function.str_to import str_to_decimal
@@ -82,6 +82,7 @@ class OrderBrows(QMainWindow):
         self.PositionOrder = namedtuple('PositionOrder', """sql_id value price sum profit_sum supply_position product order""")
 
         self.del_position_id = set()  # тут хранятся Id для удаления позиций
+        self.del_pre_position_id = set()  # тут хранятся Id для удаления позиций предзаказа
 
         self.start()
 
@@ -138,85 +139,158 @@ class OrderBrows(QMainWindow):
         self.client.show()
 
     def ui_add_position(self):  # Добавляем позию товара
-        self.position = OrderPositionBrows()
-        self.position.setModal(True)
-        self.position.show()
-        if self.position.exec_() < 1:
-            return False
+        if self.tabWidget.currentIndex() == 0:
+            self.position = OrderPositionBrows()
+            self.position.setModal(True)
+            self.position.show()
+            if self.position.exec_() < 1:
+                return False
 
-        position = self.position.acc_item
-        col = 0
-        self.tw_position.insertRow(self.tw_position.rowCount())
+            position = self.position.acc_item
+            col = 0
+            self.tw_position.insertRow(self.tw_position.rowCount())
 
-        for i in (position.product, position.order, position.value, position.price, position.sum, position.profit_sum):
-            item = QTableWidgetItem(str(i))
-            if col == 0:  # Вставляем список со значениями только в первую колонку!
-                item.setData(5, position)
-            self.tw_position.setItem(self.tw_position.rowCount()-1, col, item)
-            col += 1
+            for i in (position.product, position.order, position.value, position.price, position.sum, position.profit_sum):
+                item = QTableWidgetItem(str(i))
+                if col == 0:  # Вставляем список со значениями только в первую колонку!
+                    item.setData(5, position)
+                self.tw_position.setItem(self.tw_position.rowCount()-1, col, item)
+                col += 1
 
-        self.pb_acc.setEnabled(False)
-        self.pb_calc.setStyleSheet("background-color: rgb(255, 61, 44);")
+            self.pb_acc.setEnabled(False)
+            self.pb_calc.setStyleSheet("background-color: rgb(255, 61, 44);")
+
+        else:
+            self.position = PreOrderPositionBrows()
+            self.position.setModal(True)
+            self.position.show()
+            if self.position.exec_() < 1:
+                return False
+
+            position = self.position.acc_item
+            col = 0
+            self.tw_pre_order.insertRow(self.tw_pre_order.rowCount())
+
+            for i in (position.product, position.value, position.price, position.sum):
+                item = QTableWidgetItem(str(i))
+                if col == 0:  # Вставляем список со значениями только в первую колонку!
+                    item.setData(5, position)
+                self.tw_pre_order.setItem(self.tw_pre_order.rowCount()-1, col, item)
+                col += 1
 
     def ui_change_position(self):
-        try:
-            row = self.tw_position.currentRow()
-        except:
-            QMessageBox.information(self, "Ошибка", "Выделите позицию которую хотите изменить", QMessageBox.Ok)
-            return False
-        if row == -1:
-            QMessageBox.information(self, "Ошибка", "Выделите позицию которую хотите изменить", QMessageBox.Ok)
-            return False
-
-        position = self.tw_position.item(row, 0).data(5)
-
-        self.position = OrderPositionBrows(position)
-        self.position.setModal(True)
-        self.position.show()
-        if self.position.exec_() < 1:
-            return False
-
-        position = self.position.acc_item
-        col = 0
-
-        for i in (position.product, position.order, position.value, position.price, position.sum, position.profit_sum):
-            item = QTableWidgetItem(str(i))
-            if col == 0:  # Вставляем список со значениями только в первую колонку!
-                item.setData(5, position)
-            self.tw_position.setItem(self.tw_position.rowCount()-1, col, item)
-            col += 1
-
-        self.pb_acc.setEnabled(False)
-        self.pb_calc.setStyleSheet("background-color: rgb(255, 61, 44);")
-
-    def ui_del_position(self):  # Удаляем позицию товара
-        result = QMessageBox.question(self, "Удаление", "Точно удалить товар?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-        if result == 16384:
+        if self.tabWidget.currentIndex() == 0:
             try:
                 row = self.tw_position.currentRow()
             except:
-                QMessageBox.critical(self, "Ошибка Удаления", "Выделите товар который хотите удалить", QMessageBox.Ok)
+                QMessageBox.information(self, "Ошибка", "Выделите позицию которую хотите изменить", QMessageBox.Ok)
+                return False
+            if row == -1:
+                QMessageBox.information(self, "Ошибка", "Выделите позицию которую хотите изменить", QMessageBox.Ok)
                 return False
 
-            position = self.tw_position.item(row, 0).data(5)  # Смотрим какой тип лежит в дате (кортеж или просто ID)
-            if isinstance(position, int):
-                sql_id = position
-            elif isinstance(position, str):
-                sql_id = int(position)
-            elif isinstance(position, tuple):
-                sql_id = position.sql_id
-            else:
-                QMessageBox.critical(self, "Ошибка типа", "Пришел непонятный тип %s" % str(type(position)), QMessageBox.Ok)
+            position = self.tw_position.item(row, 0).data(5)
+
+            self.position = OrderPositionBrows(position)
+            self.position.setModal(True)
+            self.position.show()
+            if self.position.exec_() < 1:
                 return False
 
-            if sql_id is None:  # Если нет ID то можно спокойно удалить строку
-                self.tw_position.removeRow(row)
-            else:
-                self.del_position_id.add(sql_id)
-                self.tw_position.removeRow(row)
+            position = self.position.acc_item
+            col = 0
 
-        self.pb_acc.setEnabled(False)
-        self.pb_calc.setStyleSheet("background-color: rgb(255, 61, 44);")
+            for i in (position.product, position.order, position.value, position.price, position.sum, position.profit_sum):
+                item = QTableWidgetItem(str(i))
+                if col == 0:  # Вставляем список со значениями только в первую колонку!
+                    item.setData(5, position)
+                self.tw_position.setItem(self.tw_position.rowCount()-1, col, item)
+                col += 1
+
+            self.pb_acc.setEnabled(False)
+            self.pb_calc.setStyleSheet("background-color: rgb(255, 61, 44);")
+        else:
+            try:
+                row = self.tw_pre_order.currentRow()
+            except:
+                QMessageBox.information(self, "Ошибка", "Выделите позицию которую хотите изменить", QMessageBox.Ok)
+                return False
+            if row == -1:
+                QMessageBox.information(self, "Ошибка", "Выделите позицию которую хотите изменить", QMessageBox.Ok)
+                return False
+
+            position = self.tw_pre_order.item(row, 0).data(5)
+
+            self.position = PreOrderPositionBrows(position)
+            self.position.setModal(True)
+            self.position.show()
+            if self.position.exec_() < 1:
+                return False
+
+            position = self.position.acc_item
+            col = 0
+
+            for i in (position.product, position.value, position.price, position.sum):
+                item = QTableWidgetItem(str(i))
+                if col == 0:  # Вставляем список со значениями только в первую колонку!
+                    item.setData(5, position)
+                self.tw_pre_order.setItem(self.tw_pre_order.rowCount()-1, col, item)
+                col += 1
+
+    def ui_del_position(self):  # Удаляем позицию товара
+        if self.tabWidget.currentIndex() == 0:
+            result = QMessageBox.question(self, "Удаление", "Точно удалить товар?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if result == 16384:
+                try:
+                    row = self.tw_position.currentRow()
+                except:
+                    QMessageBox.critical(self, "Ошибка Удаления", "Выделите товар который хотите удалить", QMessageBox.Ok)
+                    return False
+
+                position = self.tw_position.item(row, 0).data(5)  # Смотрим какой тип лежит в дате (кортеж или просто ID)
+                if isinstance(position, int):
+                    sql_id = position
+                elif isinstance(position, str):
+                    sql_id = int(position)
+                elif isinstance(position, tuple):
+                    sql_id = position.sql_id
+                else:
+                    QMessageBox.critical(self, "Ошибка типа", "Пришел непонятный тип %s" % str(type(position)), QMessageBox.Ok)
+                    return False
+
+                if sql_id is None:  # Если нет ID то можно спокойно удалить строку
+                    self.tw_position.removeRow(row)
+                else:
+                    self.del_position_id.add(sql_id)
+                    self.tw_position.removeRow(row)
+
+            self.pb_acc.setEnabled(False)
+            self.pb_calc.setStyleSheet("background-color: rgb(255, 61, 44);")
+        else:
+            result = QMessageBox.question(self, "Удаление", "Точно удалить товар?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if result == 16384:
+                try:
+                    row = self.tw_position.currentRow()
+                except:
+                    QMessageBox.critical(self, "Ошибка Удаления", "Выделите товар который хотите удалить", QMessageBox.Ok)
+                    return False
+
+                position = self.tw_pre_order.item(row, 0).data(5)  # Смотрим какой тип лежит в дате (кортеж или просто ID)
+                if isinstance(position, int):
+                    sql_id = position
+                elif isinstance(position, str):
+                    sql_id = int(position)
+                elif isinstance(position, tuple):
+                    sql_id = position.sql_id
+                else:
+                    QMessageBox.critical(self, "Ошибка типа", "Пришел непонятный тип %s" % str(type(position)), QMessageBox.Ok)
+                    return False
+
+                if sql_id is None:  # Если нет ID то можно спокойно удалить строку
+                    self.tw_pre_order.removeRow(row)
+                else:
+                    self.del_pre_position_id.add(sql_id)
+                    self.tw_pre_order.removeRow(row)
 
     @db_session
     def ui_acc(self):
@@ -231,7 +305,8 @@ class OrderBrows(QMainWindow):
                 "note": self.le_note.toPlainText(),
                 "client": int(self.le_client.whatsThis()),
                 "shipping_method": self.cb_shipping.currentData(),
-                "payment_method": self.cb_payment.currentData()
+                "payment_method": self.cb_payment.currentData(),
+                "issued": self.cb_issued.isChecked()
                 }
 
         if self.id:
@@ -267,12 +342,32 @@ class OrderBrows(QMainWindow):
             warehouse_position = SupplyPosition[position.supply_position]
             warehouse_position.warehouse_value += (last_value - position.value)
 
+        for row in range(self.tw_pre_order.rowCount()):  # Добавим или обновим позиции предзаказа
+            position = self.tw_pre_order.item(row, 0).data(5)
+            if not isinstance(position, tuple):  # Если не список то ненадо сохранять ничего
+                continue
+
+            value = {
+                    "product": position.product_id,
+                    "value": position.value,
+                    "price": position.price,
+                    "sum": position.sum,
+                    "order": order}
+
+            if position.sql_id is None:
+                order.pre_order_positions.add(PreOrderPosition(**value))
+            else:
+                PreOrderPosition[position.sql_id].set(**value)
+
         for _id in self.del_position_id:
             # Изменим ко-во на складе
             position = OrderPosition[_id]
             position.supply_position.warehouse_value += position.value
 
             OrderPosition[_id].delete()
+
+        for _id in self.del_pre_position_id:
+            PreOrderPosition[_id].delete()
 
         self.main.ui_update()
         self.close()
@@ -327,7 +422,7 @@ class OrderBrows(QMainWindow):
         self.le_client.setWhatsThis(str(client.id))
 
     @db_session
-    def of_ex_score(self):  # Составляем счет
+    def of_ex_score(self, pre_order=False):  # Составляем счет
         path = QFileDialog.getSaveFileName(self, "Сохранение", filter="Excel(*.xlsx)")
         if not path[0]:
             return False
@@ -346,17 +441,30 @@ class OrderBrows(QMainWindow):
         all_sum = 0
         row_ex = 16
         value_row = 1
-        for row in range(self.tw_position.rowCount()):
-            sheet["A%s" % row_ex] = str(value_row)
-            sheet["B%s" % row_ex] = self.tw_position.item(row, 0).text()
-            sheet["C%s" % row_ex] = float(self.tw_position.item(row, 2).text())
-            sheet["D%s" % row_ex] = "шт."
-            sheet["E%s" % row_ex] = float(self.tw_position.item(row, 3).text())
-            sheet["F%s" % row_ex] = float(self.tw_position.item(row, 4).text())
+        if not pre_order:  # Если это будет предзаказ то втавлять будем из другой таблицы
+            for row in range(self.tw_position.rowCount()):
+                sheet["A%s" % row_ex] = str(value_row)
+                sheet["B%s" % row_ex] = self.tw_position.item(row, 0).text()
+                sheet["C%s" % row_ex] = float(self.tw_position.item(row, 2).text())
+                sheet["D%s" % row_ex] = "шт."
+                sheet["E%s" % row_ex] = float(self.tw_position.item(row, 3).text())
+                sheet["F%s" % row_ex] = float(self.tw_position.item(row, 4).text())
 
-            all_sum += Decimal(self.tw_position.item(row, 4).text())
-            row_ex += 1
-            value_row += 1
+                all_sum += Decimal(self.tw_position.item(row, 4).text())
+                row_ex += 1
+                value_row += 1
+        else:
+            for row in range(self.tw_pre_order.rowCount()):
+                sheet["A%s" % row_ex] = str(value_row)
+                sheet["B%s" % row_ex] = self.tw_pre_order.item(row, 0).text()
+                sheet["C%s" % row_ex] = float(self.tw_pre_order.item(row, 1).text())
+                sheet["D%s" % row_ex] = "шт."
+                sheet["E%s" % row_ex] = float(self.tw_pre_order.item(row, 2).text())
+                sheet["F%s" % row_ex] = float(self.tw_pre_order.item(row, 3).text())
+
+                all_sum += Decimal(self.tw_pre_order.item(row, 3).text())
+                row_ex += 1
+                value_row += 1
 
         for row in sheet.iter_rows(min_row=16, max_col=6, max_row=row_ex-1):
             for cell in row:
@@ -635,7 +743,7 @@ class OrderPositionBrows(QDialog):
             self.warehouse_value = 0
 
     def ui_view_catalog(self):
-        self.parts = parts.PartsCatalog(self)
+        self.parts = parts.PartsCatalog(self, select_warehouse=True)
         self.parts.setWindowModality(Qt.ApplicationModal)
         self.parts.show()
 
@@ -751,7 +859,8 @@ class OrderDocument(QDialog):
             self.main.of_ex_torg12()
 
         elif self.lw_main.selectedItems()[0].text() == "Счет":
-            self.main.of_ex_score()
+            pre_order = self.cb_pre_order.isChecked()
+            self.main.of_ex_score(pre_order=pre_order)
 
         self.close()
         self.destroy()
@@ -759,5 +868,120 @@ class OrderDocument(QDialog):
     def ui_can(self):
         self.close()
         self.destroy()
+
+
+class PreOrderPositionBrows(QDialog):
+    def __init__(self, position=None):
+        super(PreOrderPositionBrows, self).__init__()
+        loadUi(getcwd() + '/ui/pre_order_position.ui', self)
+        self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
+        self.widget.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW)
+
+        self.PositionPreOrder = namedtuple('PositionCost', 'sql_id, product_id product value price sum')
+
+        self.position = position
+
+        self.sql_id = None  # переменная для хранения и вставки sql ID строки
+        self.acc_item = None  # переменная для хранения итогово списка
+
+        self.start()
+
+    @db_session
+    def start(self):
+        # Проверим что пришло, список или Id строки
+        if isinstance(self.position, tuple):
+            self.sql_id = self.position.sql_id
+            self.le_parts.setWhatsThis(str(self.position.product_id))
+            self.le_parts.setText(str(self.position.product))
+            self.le_value.setText(str(self.position.value))
+            self.le_price.setText(str(self.position.price))
+            self.le_sum.setText(str(self.position.sum))
+
+        elif isinstance(self.position, int):
+            self.sql_id = self.position  # Записываем Id строки
+            sql_position = PreOrderPosition[self.sql_id]  # Получаем позицию из бд
+            self.position = self.PositionCost(self.sql_id, sql_position.product.id, sql_position.product.name,  # Составляем список для последующего сравнения
+                                              sql_position.value, sql_position.price, sql_position.sum)
+            self.le_parts.setWhatsThis(str(self.position.product_id))
+            self.le_parts.setText(str(self.position.product))
+            self.le_value.setText(str(self.position.value))
+            self.le_price.setText(str(self.position.price))
+            self.le_sum.setText(str(self.position.sum))
+
+        elif self.position is None:  # Новая позиция
+            pass
+
+        else:
+            QMessageBox.information(self, "Ошибка типа", "Пришел непонятный тип %s" % str(type(self.position)), QMessageBox.Ok)
+            return False
+
+    def ui_view_parts(self):
+        self.parts = parts.PartsCatalog(self, select_product=True)
+        self.parts.setWindowModality(Qt.ApplicationModal)
+        self.parts.show()
+
+    def ui_acc(self):
+        if not self.le_parts.text():
+            QMessageBox.information(self, "Ошибка", "Не выбрана затрата", QMessageBox.Ok)
+            return False
+
+        self.acc_item = self.PositionPreOrder(self.sql_id,
+                                              int(self.le_parts.whatsThis()),
+                                              self.le_parts.text(),
+                                              str_to_decimal(self.le_value.text()),
+                                              str_to_decimal(self.le_price.text()),
+                                              str_to_decimal(self.le_sum.text()))
+
+        if self.acc_item == self.position:  # Если позиция не изменилась то дклаем закрытие окна
+            print("нет изменений в прочих расходах")
+            self.ui_can()
+            return False
+
+        if not self.acc_item.value:
+            QMessageBox.information(self, "Ошибка", "Что то не так с кол-вом", QMessageBox.Ok)
+            return False
+
+        if not self.acc_item.price:
+            QMessageBox.information(self, "Ошибка", "Что то не так с ценой", QMessageBox.Ok)
+            return False
+
+        if not self.acc_item.sum:
+            QMessageBox.information(self, "Ошибка", "Что то не так с суммой", QMessageBox.Ok)
+            return False
+
+        self.done(1)
+        self.close()
+        self.destroy()
+
+    def ui_can(self):
+        self.done(0)
+        self.close()
+        self.destroy()
+
+    def ui_calc_sum(self):
+        value = str_to_decimal(self.le_value.text())
+        price = str_to_decimal(self.le_price.text())
+
+        if value and price:
+            self.le_sum.setText(str(round(value*price, 2)))
+        else:
+            self.le_sum.setText("ОШИБКА")
+
+    def ui_calc_pcs(self):
+        value = str_to_decimal(self.le_value.text())
+        sum = str_to_decimal(self.le_sum.text())
+
+        if value and sum:
+            self.le_sum.setText(str(round(sum/value, 2)))
+        else:
+            self.le_sum.setText("ОШИБКА")
+
+    @db_session
+    def of_tree_select_catalog_product(self, _id):
+        position = Parts[_id]
+
+        self.le_parts.setText(position.name)
+        self.le_parts.setWhatsThis(str(position.id))
+
 
 

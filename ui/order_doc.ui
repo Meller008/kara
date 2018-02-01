@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>177</width>
+    <width>152</width>
     <height>177</height>
    </rect>
   </property>
@@ -60,7 +60,7 @@
      </item>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="2" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <property name="spacing">
       <number>0</number>
@@ -93,6 +93,13 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item row="1" column="0">
+    <widget class="QCheckBox" name="cb_pre_order">
+     <property name="text">
+      <string>Предзаказ?</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

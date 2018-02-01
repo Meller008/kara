@@ -358,13 +358,15 @@ class PartsManufacturer(list.ListItems):
 
 
 class PartsCatalog(QMainWindow):
-    def __init__(self, main=None):
+    def __init__(self, main=None, select_warehouse=False, select_product=False):
         super(PartsCatalog, self).__init__()
         loadUi(getcwd() + '/ui/product_catalog.ui', self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
         # self.widget.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW_PARTS)
 
         self.main = main
+        self.select_warehouse = select_warehouse
+        self.select_product = select_product
 
         self.filter_article = None  # Фильтр по артикулу
         self.filter_name = None  # Фильтр по именитовара
@@ -518,8 +520,14 @@ class PartsCatalog(QMainWindow):
         self.filter_product()
 
     def ui_dc_warehouse(self, item):
-        if self.main:
+        if self.main and self.select_warehouse:
             self.main.of_tree_select_catalog_warehouse(item.data(5))
+            self.close()
+            self.destroy()
+
+    def ui_dc_product(self, item):
+        if self.main and self.select_product:
+            self.main.of_tree_select_catalog_product(item.data(5))
             self.close()
             self.destroy()
 

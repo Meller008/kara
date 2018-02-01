@@ -607,8 +607,8 @@
    <slot>ui_change_machine_id()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>765</x>
-     <y>551</y>
+     <x>1059</x>
+     <y>689</y>
     </hint>
     <hint type="destinationlabel">
      <x>755</x>
@@ -728,6 +728,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tw_poduct</sender>
+   <signal>itemDoubleClicked(QTableWidgetItem*)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_dc_product()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>699</x>
+     <y>174</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>726</x>
+     <y>-165</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ui_change_manufacturer_machine()</slot>
@@ -740,5 +756,6 @@
   <slot>ui_dc_warehouse()</slot>
   <slot>ui_change_name()</slot>
   <slot>ui_change_manufacturer_name()</slot>
+  <slot>ui_dc_product()</slot>
  </slots>
 </ui>

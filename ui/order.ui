@@ -14,7 +14,7 @@
    <string>Заказ</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0,1,0">
+   <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0,0,0">
     <property name="leftMargin">
      <number>1</number>
     </property>
@@ -89,13 +89,6 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QDateEdit" name="de_date">
-          <property name="calendarPopup">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
         <item row="2" column="1">
          <layout class="QHBoxLayout" name="horizontalLayout">
           <property name="spacing">
@@ -144,6 +137,27 @@
         </item>
         <item row="3" column="1">
          <widget class="QComboBox" name="cb_shipping"/>
+        </item>
+        <item row="1" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <item>
+           <widget class="QDateEdit" name="de_date">
+            <property name="calendarPopup">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="cb_issued">
+            <property name="text">
+             <string>Товар выдан клиенту</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </item>
@@ -315,71 +329,6 @@
       </item>
      </layout>
     </item>
-    <item row="1" column="0">
-     <widget class="Line" name="line_2">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QTableWidget" name="tw_position">
-      <property name="font">
-       <font>
-        <family>Tahoma</family>
-        <pointsize>8</pointsize>
-       </font>
-      </property>
-      <property name="editTriggers">
-       <set>QAbstractItemView::NoEditTriggers</set>
-      </property>
-      <property name="alternatingRowColors">
-       <bool>true</bool>
-      </property>
-      <property name="selectionBehavior">
-       <enum>QAbstractItemView::SelectRows</enum>
-      </property>
-      <attribute name="verticalHeaderVisible">
-       <bool>false</bool>
-      </attribute>
-      <attribute name="verticalHeaderDefaultSectionSize">
-       <number>20</number>
-      </attribute>
-      <attribute name="verticalHeaderMinimumSectionSize">
-       <number>18</number>
-      </attribute>
-      <column>
-       <property name="text">
-        <string>Товар</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Заказ</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Кол-во</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Цена</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Сумма</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Прибыль</string>
-       </property>
-      </column>
-     </widget>
-    </item>
     <item row="4" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <property name="spacing">
@@ -414,6 +363,170 @@
       </item>
      </layout>
     </item>
+    <item row="1" column="0">
+     <widget class="Line" name="line_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Заказ</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item row="0" column="0">
+         <widget class="QTableWidget" name="tw_position">
+          <property name="font">
+           <font>
+            <family>Tahoma</family>
+            <pointsize>8</pointsize>
+           </font>
+          </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderDefaultSectionSize">
+           <number>20</number>
+          </attribute>
+          <attribute name="verticalHeaderMinimumSectionSize">
+           <number>18</number>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>Товар</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Заказ</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Кол-во</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Цена</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Сумма</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Прибыль</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Предзаказ</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item row="0" column="0">
+         <widget class="QTableWidget" name="tw_pre_order">
+          <property name="font">
+           <font>
+            <family>Tahoma</family>
+            <pointsize>8</pointsize>
+           </font>
+          </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderDefaultSectionSize">
+           <number>20</number>
+          </attribute>
+          <attribute name="verticalHeaderMinimumSectionSize">
+           <number>18</number>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>Товар</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Кол-во</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Цена</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Сумма</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QToolBar" name="toolBar">
@@ -446,8 +559,8 @@
    <slot>ui_view_client()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>280</x>
-     <y>68</y>
+     <x>292</x>
+     <y>90</y>
     </hint>
     <hint type="destinationlabel">
      <x>289</x>
@@ -462,8 +575,8 @@
    <slot>ui_add_position()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>15</x>
-     <y>206</y>
+     <x>17</x>
+     <y>240</y>
     </hint>
     <hint type="destinationlabel">
      <x>-54</x>
@@ -510,28 +623,12 @@
    <slot>ui_change_position()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>95</x>
-     <y>209</y>
+     <x>127</x>
+     <y>240</y>
     </hint>
     <hint type="destinationlabel">
      <x>-63</x>
      <y>162</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>tw_position</sender>
-   <signal>cellDoubleClicked(int,int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>ui_change_position()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>54</x>
-     <y>291</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-128</x>
-     <y>301</y>
     </hint>
    </hints>
   </connection>
@@ -542,8 +639,8 @@
    <slot>ui_del_position()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>177</x>
-     <y>210</y>
+     <x>186</x>
+     <y>240</y>
     </hint>
     <hint type="destinationlabel">
      <x>-59</x>
@@ -580,6 +677,38 @@
     <hint type="destinationlabel">
      <x>265</x>
      <y>245</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tw_position</sender>
+   <signal>cellDoubleClicked(int,int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_change_position()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>93</x>
+     <y>330</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-76</x>
+     <y>329</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tw_pre_order</sender>
+   <signal>cellDoubleClicked(int,int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_change_position()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>82</x>
+     <y>315</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-73</x>
+     <y>315</y>
     </hint>
    </hints>
   </connection>

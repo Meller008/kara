@@ -53,11 +53,13 @@ class Order(db.Entity):
     sum_all = Required(Decimal)
     value_position = Required(int)
     discount_percent = Required(Decimal)
+    issued = Required(bool)
     note = Optional(str)
     client = Required('Client')
     shipping_method = Required('ShippingMethod')
     payment_method = Required('PaymentMethod')
     order_positions = Set('OrderPosition', cascade_delete=False)
+    pre_order_positions = Set('PreOrderPosition', cascade_delete=False)
 
 
 class CityClient(db.Entity):
@@ -81,10 +83,11 @@ class Parts(db.Entity):
     name = Optional(str, unique=True)
     vendor_name = Optional(str, unique=True)
     note = Optional(str)
-    manufacturer = Required('ManufacturerParts')
     price = Required(Decimal)
+    manufacturer = Required('ManufacturerParts')
     tree = Required('PartsTree')
     supply_positions = Set('SupplyPosition', cascade_delete=False)
+    pre_order_positions = Set('PreOrderPosition', cascade_delete=False)
     sewing_machines = Set('SewingMachine')
 
 
@@ -145,7 +148,7 @@ class Supply(db.Entity):
     all_sum = Optional(Decimal)
     value_position = Required(int)
     note = Optional(str)
-    cost_other = Set('SupplyCostOther', cascade_delete=False)
+    cost_other = Set('SupplyCostOther')
     city = Required('CityVendor')
     shipping = Required(ShippingMethodVendor)
     payment = Required(PaymentMethodVendor)
@@ -198,7 +201,7 @@ class CityVendor(db.Entity):
     note = Optional(str)
     country = Required(CountryVendor)
     supplys = Set(Supply, cascade_delete=False)
-    vendors = Set(Vendor, cascade_delete=False)
+    vendors = Set(Vendor)
 
 
 class SupplyCostOther(db.Entity):
@@ -222,6 +225,15 @@ class PaymentMethod(db.Entity):
     name = Optional(str)
     note = Optional(str)
     orders = Set(Order, cascade_delete=False)
+
+
+class PreOrderPosition(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    value = Required(Decimal)
+    price = Required(Decimal)
+    sum = Required(Decimal)
+    order = Required(Order)
+    product = Required(Parts)
 
 sql_debug(True)
 db.generate_mapping(create_tables=True, check_tables=True)
