@@ -2,7 +2,8 @@ from os import getcwd
 from PyQt5.QtWidgets import QMainWindow, QMdiSubWindow
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QIcon
-from form import country, shipping, payment, vendor, sewing_machine, parts, supply, clients, order, label
+from form import country, shipping, payment, vendor, sewing_machine, parts, supply, clients, order, label,\
+    calc_delivery
 
 
 class MainWindow(QMainWindow):
@@ -164,3 +165,11 @@ class MainWindow(QMainWindow):
         self.mdi.addSubWindow(self.sub_label_box)
         self.sub_label_box.resize(self.label_box.size())
         self.sub_label_box.show()
+
+    def ui_view_calc_delivery(self):
+        self.calc_delivery = calc_delivery.CalcDelivery()
+        self.sub_calc_delivery = QMdiSubWindow()
+        self.sub_calc_delivery.setWidget(self.calc_delivery)
+        self.mdi.addSubWindow(self.sub_calc_delivery)
+        self.sub_calc_delivery.resize(self.calc_delivery.size())
+        self.sub_calc_delivery.show()
