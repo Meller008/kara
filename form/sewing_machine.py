@@ -163,6 +163,8 @@ class SewingMachineBrows(QMainWindow):
         machine_class.type.remove(map(lambda x: TypeSewingMachine[x], self.del_type))
         machine_class.type.add(map(lambda row: TypeSewingMachine[self.lw_type.item(row).data(5)], range(self.lw_type.count())))
 
+        commit()
+
         self.main.ui_update()
         self.close()
         self.destroy()

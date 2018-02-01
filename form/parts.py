@@ -2,7 +2,7 @@ from os import getcwd, path, mkdir, remove
 import shutil
 from urllib.request import urlretrieve
 from treelib import Tree
-from PyQt5.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QTableWidgetItem, QTreeWidgetItem, QListWidgetItem, QInputDialog
+from PyQt5.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QTableWidgetItem, QTreeWidgetItem, QListWidgetItem, QInputDialog, QLineEdit, QWidget, QSizePolicy
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QIcon, QImage, QPixmap
 from PyQt5.QtCore import Qt
@@ -26,6 +26,9 @@ class PartsList(tree.TreeList):
         self.setWindowTitle("Список товара")  # Имя окна
         self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW_PARTS)  # Цвет бара
 
+        self.pb_other.deleteLater()
+        self.pb_table_double.deleteLater()
+
         # Названия колонк (Имя, Длинна)
         self.table_header_name = (("Артикул", 60), ("Имя", 150), ("Цена", 60), ("Заметка", 250))
 
@@ -34,7 +37,8 @@ class PartsList(tree.TreeList):
         # нулевой элемент должен быть ID а первый Parent_ID (ID категории)
         self.item = Parts  # Класс который будем выводить! Без скобок!
         # сам запрос
-        self.query = select((p.id, p.tree, p.id, p.name, p.price, p.note) for p in Parts)
+        self.query_all = select((p.id, p.tree, p.id, p.name, p.price, p.note) for p in Parts)
+        self.query = self.query_all
 
         # Настройки окна добавления и редактирования дерева
         self.set_new_win_tree = {"WinTitle": "Добавление категории",
@@ -44,6 +48,16 @@ class PartsList(tree.TreeList):
         # Настройки окна переноса элементов
         self.set_transfer_win = {"WinTitle": "Изменение категории",
                                  "WinColor": "(255, 255, 255)"}
+
+        # Быстрый фильтр
+        self.le_fast_filter = QLineEdit()
+        self.le_fast_filter.setPlaceholderText("Артикул")
+        self.le_fast_filter.setMaximumWidth(150)
+        self.le_fast_filter.editingFinished.connect(self.fast_filter)
+        dummy = QWidget()
+        dummy.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+        self.toolBar.addWidget(dummy)
+        self.toolBar.addWidget(self.le_fast_filter)
 
     def ui_add_table_item(self):  # Добавить предмет
         try:
@@ -81,13 +95,24 @@ class PartsList(tree.TreeList):
             self.close()
             self.destroy()
 
+    def fast_filter(self):
+        # Блок условий артикула
+        if self.le_fast_filter.text() != '':
+            text = self.le_fast_filter.text()
+            self.query = self.query_all.where(lambda p: text in p.name or text == p.id)
+            self.fast_filter_select = True
+        else:
+            self.query = self.query_all
+
+        self.ui_update_table()
+
 
 class PartsWindow(QMainWindow):
     def __init__(self, main=None, product_id=None, tree_id=None):
         super(PartsWindow, self).__init__()
         loadUi(getcwd() + '/ui/product.ui', self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
-        self.widget.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW_PARTS)
+        self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW_PARTS)
 
         self.main = main
         self.id = product_id
@@ -159,10 +184,18 @@ class PartsWindow(QMainWindow):
             if path.isfile(path_photo):
                 remove(path_photo)
 
-            urlretrieve(url, path_photo)
+            try:
+                urlretrieve(url, path_photo)
+            except ValueError:
+                QMessageBox.information(self, "Ошибка url", "unknown url type", QMessageBox.Ok)
+                return False
+
             img = QImage(path_photo)
             img = img.scaled(self.lb_photo.height(), self.lb_photo.width(), Qt.KeepAspectRatio)
             self.lb_photo.setPixmap(QPixmap().fromImage(img))
+
+            self.photo_dir = path_photo
+            self.photo_del = False
 
     def ui_change_photo(self):
         dir = QFileDialog.getOpenFileNames(self, "Выбор фото", "", "*.jpg")[0]
@@ -201,6 +234,11 @@ class PartsWindow(QMainWindow):
 
         self.tw_machine.removeRow(row)
 
+    def ui_copy(self):  # Скопировать данные другой запчасти
+        self.parts_list = PartsList(self, True)
+        self.parts_list.setWindowModality(Qt.ApplicationModal)
+        self.parts_list.show()
+
     @db_session
     def ui_acc(self):
 
@@ -213,6 +251,10 @@ class PartsWindow(QMainWindow):
                 "price": str_to_float(self.le_price.text())
                 }
 
+        if not value["name"] or not value["manufacturer"]:
+            QMessageBox.information(self, "Ошибка сохранения", "Не все заполнено", QMessageBox.Ok)
+            return False
+
         if self.id:
             p = Parts[self.id]
             value.pop("tree")
@@ -223,7 +265,7 @@ class PartsWindow(QMainWindow):
         p.sewing_machines.remove(map(lambda x: SewingMachine[x], self.machine_id_del))
         p.sewing_machines.add(map(lambda x: SewingMachine[x], self.machine_id_new))
 
-        commit()
+        flush()
 
         if self.photo_del or self.photo_dir:
             path_photo = self.inspection_path(p.id)
@@ -234,7 +276,8 @@ class PartsWindow(QMainWindow):
 
                 if self.photo_dir:
                     path_photo += "/main.jpg"
-                    shutil.copy2(self.photo_dir, path_photo)
+                    if self.photo_dir != path_photo:
+                        shutil.copy2(self.photo_dir, path_photo)
 
         self.main.ui_update_table()
         self.close()
@@ -270,6 +313,28 @@ class PartsWindow(QMainWindow):
         except ValueError:
             pass
 
+    @db_session
+    def of_tree_select_product(self, part_id):  # Вставка скопированой запчасти
+        part_copy = Parts[part_id]
+
+        self.le_name.setText(part_copy.name)
+        self.le_vaendor_name.setText(part_copy.vendor_name)
+        self.le_note.setText(part_copy.note)
+        self.le_manufacturer.setText(part_copy.manufacturer.name)
+        self.le_manufacturer.setWhatsThis(str(part_copy.manufacturer.id))
+        self.le_price.setText(str(part_copy.price))
+
+        for machine in part_copy.sewing_machines:
+            self.of_select_sewing_machine(machine.id)
+
+        path_photo = self.inspection_path(part_copy.id)
+        img = QImage(path_photo + "/main.jpg")
+        img = img.scaled(self.lb_photo.height(), self.lb_photo.width(), Qt.KeepAspectRatio)
+        self.lb_photo.setPixmap(QPixmap().fromImage(img))
+
+        self.photo_dir = path_photo + "/main.jpg"
+        self.photo_del = False
+
 
 class PartsManufacturer(list.ListItems):
     def set_settings(self):
@@ -302,6 +367,8 @@ class PartsCatalog(QMainWindow):
         self.main = main
 
         self.filter_article = None  # Фильтр по артикулу
+        self.filter_name = None  # Фильтр по именитовара
+        self.filter_manufacturer_name = None  # Фильтр по имени производителя
         self.filter_type_product_id = None  # Фильтр по каталогу продукта
         self.filter_manufacturer_product_id = None  # Фильтр по производителю запчасти
         self.filter_machine_id = None  # Фильтр по ID оборудования
@@ -381,6 +448,20 @@ class PartsCatalog(QMainWindow):
         except ValueError:
             self.filter_article = None
 
+    def ui_change_name(self, text):
+        try:
+            self.filter_name = text
+            self.filter_product()
+        except ValueError:
+            self.filter_name = None
+
+    def ui_change_manufacturer_name(self, text):
+        try:
+            self.filter_manufacturer_name = int(text)
+            self.filter_product()
+        except ValueError:
+            self.filter_manufacturer_name = None
+
     def ui_change_product_type(self, item):
         _id = item.data(0, 5)
 
@@ -456,6 +537,7 @@ class PartsCatalog(QMainWindow):
 
         self.le_article.setText(str(product.id))
         self.le_name.setText(str(product.name))
+        self.le_manufacturer_name.setText(str(product.vendor_name))
         self.le_price.setText(str(product.price))
         self.le_manufacturer.setText(str(product.manufacturer.name))
         self.le_note.setText(str(product.note))
@@ -543,6 +625,14 @@ class PartsCatalog(QMainWindow):
         if self.filter_article:  # Если мы ввели точны артикул то ищем только по нему
             query = query.filter(lambda p: self.filter_article == p.id)
             self.filter_article = None
+
+        elif self.filter_name:
+            query = query.filter(lambda p: self.filter_name in p.name)
+            self.filter_name = None
+
+        elif self.filter_manufacturer_name:
+            query = query.filter(lambda p: self.filter_manufacturer_name in p.vendor_name)
+            self.filter_manufacturer_name = None
         else:
             if self.filter_type_product_id:
                 query = query.filter(lambda p: self.filter_type_product_id == p.tree.id)

@@ -2,7 +2,7 @@ from os import getcwd
 from PyQt5.QtWidgets import QMainWindow, QMdiSubWindow
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QIcon
-from form import country, shipping, payment, vendor, sewing_machine, parts, supply, clients, order
+from form import country, shipping, payment, vendor, sewing_machine, parts, supply, clients, order, label
 
 
 class MainWindow(QMainWindow):
@@ -156,3 +156,11 @@ class MainWindow(QMainWindow):
         self.mdi.addSubWindow(self.sub_order_list)
         self.sub_order_list.resize(self.order_list.size())
         self.sub_order_list.show()
+
+    def ui_view_label_box(self):
+        self.label_box = label.LabelBox()
+        self.sub_label_box = QMdiSubWindow()
+        self.sub_label_box.setWidget(self.label_box)
+        self.mdi.addSubWindow(self.sub_label_box)
+        self.sub_label_box.resize(self.label_box.size())
+        self.sub_label_box.show()

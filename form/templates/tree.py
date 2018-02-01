@@ -22,6 +22,8 @@ class TreeList(QMainWindow):
 
         self.select_item = open_id  # Переменная для открытия выбраного ID
 
+        self.fast_filter_select = False  # Переменная показывает вызвали ли мы бфстрый фильтр.
+
         self.set_settings()
         self.set_table_header()
         self.set_tree_info()
@@ -80,12 +82,15 @@ class TreeList(QMainWindow):
 
         self.table_widget.setSortingEnabled(True)
 
-        try:
-            item = self.tree_widget.currentItem()
-            if item.data(0, 5) >= 0:  # Проверка не выбрано ли показать все!
-                self.ui_sorting(item)
-        except:
-            pass
+        if not self.fast_filter_select:
+            try:
+                item = self.tree_widget.currentItem()
+                if item.data(0, 5) >= 0:  # Проверка не выбрано ли показать все!
+                    self.ui_sorting(item)
+            except:
+                pass
+        else:
+            self.fast_filter_select = False
 
         if self.select_item:
             self.open_id(self.select_item)
@@ -374,8 +379,10 @@ class TreeList(QMainWindow):
     def ui_update_table(self):
         self.table_widget.setSortingEnabled(False)
         self.set_table_info()
-        self.set_tree_info()
         self.table_widget.setSortingEnabled(True)
+
+    def ui_update_tree(self):
+        self.set_tree_info()
 
     def ui_other(self):
         pass

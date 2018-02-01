@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1005</width>
+    <width>1063</width>
     <height>693</height>
    </rect>
   </property>
@@ -189,13 +189,10 @@
              <property name="spacing">
               <number>2</number>
              </property>
-             <item row="1" column="0">
-              <widget class="QLineEdit" name="le_article">
-               <property name="maximumSize">
-                <size>
-                 <width>100</width>
-                 <height>16777215</height>
-                </size>
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="le_manufacturer">
+               <property name="readOnly">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -206,24 +203,20 @@
                </property>
               </widget>
              </item>
+             <item row="1" column="0">
+              <widget class="QLineEdit" name="le_article">
+               <property name="maximumSize">
+                <size>
+                 <width>100</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
              <item row="2" column="1">
               <widget class="QLabel" name="label_17">
                <property name="text">
                 <string>Производитель</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="le_name">
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="0" colspan="2">
-              <widget class="QLabel" name="label_18">
-               <property name="text">
-                <string>Заметка</string>
                </property>
               </widget>
              </item>
@@ -240,20 +233,6 @@
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
-              <widget class="QLabel" name="label_19">
-               <property name="text">
-                <string>Название</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QLineEdit" name="le_manufacturer">
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="0">
               <widget class="QLabel" name="label_20">
                <property name="text">
@@ -261,12 +240,43 @@
                </property>
               </widget>
              </item>
-             <item row="5" column="0" colspan="2">
+             <item row="2" column="2">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Название производителя</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1" colspan="2">
+              <widget class="QLineEdit" name="le_name">
+               <property name="readOnly">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1" colspan="2">
+              <widget class="QLabel" name="label_19">
+               <property name="text">
+                <string>Название</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0" colspan="3">
               <widget class="QLineEdit" name="le_note">
                <property name="readOnly">
                 <bool>true</bool>
                </property>
               </widget>
+             </item>
+             <item row="4" column="0" colspan="3">
+              <widget class="QLabel" name="label_18">
+               <property name="text">
+                <string>Заметка</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="2">
+              <widget class="QLineEdit" name="le_manufacturer_name"/>
              </item>
             </layout>
            </item>
@@ -686,6 +696,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>le_name</sender>
+   <signal>textEdited(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_change_name()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>486</x>
+     <y>383</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>596</x>
+     <y>-70</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>le_manufacturer_name</sender>
+   <signal>textEdited(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_change_manufacturer_machine()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>579</x>
+     <y>423</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>624</x>
+     <y>-57</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ui_change_manufacturer_machine()</slot>
@@ -696,5 +738,7 @@
   <slot>ui_set_product()</slot>
   <slot>ui_change_article()</slot>
   <slot>ui_dc_warehouse()</slot>
+  <slot>ui_change_name()</slot>
+  <slot>ui_change_manufacturer_name()</slot>
  </slots>
 </ui>
