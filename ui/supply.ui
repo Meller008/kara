@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>773</width>
+    <width>823</width>
     <height>452</height>
    </rect>
   </property>
@@ -48,7 +48,7 @@
        <enum>QAbstractItemView::SelectRows</enum>
       </property>
       <attribute name="verticalHeaderVisible">
-       <bool>false</bool>
+       <bool>true</bool>
       </attribute>
       <attribute name="verticalHeaderDefaultSectionSize">
        <number>20</number>
@@ -56,6 +56,11 @@
       <attribute name="verticalHeaderMinimumSectionSize">
        <number>18</number>
       </attribute>
+      <column>
+       <property name="text">
+        <string>Артик.</string>
+       </property>
+      </column>
       <column>
        <property name="text">
         <string>Товар</string>

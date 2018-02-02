@@ -18,7 +18,7 @@ PHOTO_DIR = getcwd() + "/photo/"
 
 class SupplyList(table.TableList):
     def set_settings(self):
-        self.setWindowTitle("Список")  # Имя окна
+        self.setWindowTitle("Поставки товара")  # Имя окна
         self.resize(500, 270)
         self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW_SUPPLY)  # Цвет бара
 
@@ -85,16 +85,17 @@ class SupplyBrows(QMainWindow):
         self.tw_cost_position.horizontalHeader().resizeSection(2, 55)
         self.tw_cost_position.horizontalHeader().resizeSection(3, 80)
 
-        self.tw_position.horizontalHeader().resizeSection(0, 140)
-        self.tw_position.horizontalHeader().resizeSection(1, 50)
+        self.tw_position.horizontalHeader().resizeSection(0, 50)
+        self.tw_position.horizontalHeader().resizeSection(1, 120)
         self.tw_position.horizontalHeader().resizeSection(2, 50)
-        self.tw_position.horizontalHeader().resizeSection(3, 70)
+        self.tw_position.horizontalHeader().resizeSection(3, 50)
         self.tw_position.horizontalHeader().resizeSection(4, 70)
         self.tw_position.horizontalHeader().resizeSection(5, 70)
         self.tw_position.horizontalHeader().resizeSection(6, 70)
-        self.tw_position.horizontalHeader().resizeSection(7, 75)
+        self.tw_position.horizontalHeader().resizeSection(7, 70)
         self.tw_position.horizontalHeader().resizeSection(8, 75)
         self.tw_position.horizontalHeader().resizeSection(9, 75)
+        self.tw_position.horizontalHeader().resizeSection(10, 75)
 
         self.de_date_order.setDate(QDate.currentDate())
         self.de_date_shipping.setDate(QDate.currentDate())
@@ -129,7 +130,7 @@ class SupplyBrows(QMainWindow):
 
             for position in supply.position:
                 self.tw_position.insertRow(self.tw_position.rowCount())
-                for i, position_atr in enumerate((position.parts.name, position.value, position.warehouse_value, position.price_vendor, position.price_ru,
+                for i, position_atr in enumerate((position.parts.id, position.parts.name, position.value, position.warehouse_value, position.price_vendor, position.price_ru,
                                                   position.price_cost, position.percent_markup, position.price_sell, position.sum_ru, position.sum_cost)):
                     item = QTableWidgetItem(str(position_atr))
                     if i == 0:  # Вставляем ID записи первую колонку!
@@ -229,7 +230,7 @@ class SupplyBrows(QMainWindow):
         col = 0
         self.tw_position.insertRow(self.tw_position.rowCount())
 
-        for i in (position.parts, position.value, position.warehouse_value, position.price_vendor, position.price_ru, position.price_cost,
+        for i in (position.article, position.parts, position.value, position.warehouse_value, position.price_vendor, position.price_ru, position.price_cost,
                   position.percent_markup, position.price_sell, position.sum_ru, position.sum_cost):
             item = QTableWidgetItem(str(i))
             if col == 0:  # Вставляем список со значениями только в первую колонку!
@@ -262,7 +263,7 @@ class SupplyBrows(QMainWindow):
 
         position = self.position.acc_item
         col = 0
-        for i in (position.parts, position.value, position.warehouse_value, position.price_vendor, position.price_ru, position.price_cost,
+        for i in (position.article, position.parts, position.value, position.warehouse_value, position.price_vendor, position.price_ru, position.price_cost,
                   position.percent_markup, position.price_sell, position.sum_ru, position.sum_cost):
             item = QTableWidgetItem(str(i))
             if col == 0:  # Вставляем список со значениями только в первую колонку!
@@ -304,8 +305,16 @@ class SupplyBrows(QMainWindow):
 
     @db_session
     def ui_calc_supply(self):  # Пересчет заказа (Затраты, сумма, позиции, ...)
+
+        # узнать способ пересчета
+        self.calc_way = SupplyCalcInquiry()
+        self.calc_way.setModal(True)
+        self.calc_way.show()
+        if self.calc_way.exec_() < 1:
+            return False
+
         self.PositionOrder = namedtuple('PositionOrder', """sql_id parts_id parts value warehouse_value price_vendor price_ru 
-                                                            price_cost percent_markup price_sell price_profit sum_ru sum_cost""")
+                                                            price_cost percent_markup price_sell price_profit sum_ru sum_cost article""")
         sum_cost = 0
 
         # Считаем сумму затрат
@@ -329,7 +338,7 @@ class SupplyBrows(QMainWindow):
                 position = self.PositionOrder(sql_position.id, sql_position.parts.id, sql_position.parts.name,  # Составляем список для последующего сравнения
                                               sql_position.value, sql_position.warehouse_value, sql_position.price_vendor, sql_position.price_ru,
                                               sql_position.price_cost, sql_position.percent_markup, sql_position.price_sell, sql_position.price_profit,
-                                              sql_position.sum_ru, sql_position.sum_cost)
+                                              sql_position.sum_ru, sql_position.sum_cost, sql_position.parts.id)
                 self.tw_position.item(row, 0).setData(5, position)
 
             sum_ru += position.sum_ru
@@ -350,20 +359,40 @@ class SupplyBrows(QMainWindow):
         for row in range(self.tw_position.rowCount()):
             position = self.tw_position.item(row, 0).data(5)
 
-            new_price_cost = round(((position.price_ru / 100) * cost_percent) + position.price_ru, 2)
-            position = self.PositionOrder(position.sql_id,
-                                          position.parts_id,
-                                          position.parts,
-                                          position.value,
-                                          position.warehouse_value,
-                                          position.price_vendor,
-                                          position.price_ru,
-                                          new_price_cost,
-                                          round((position.price_sell - new_price_cost) / new_price_cost * 100, 2),
-                                          position.price_sell,
-                                          round(position.price_sell - new_price_cost, 2),
-                                          position.sum_ru,
-                                          round(new_price_cost * position.value, 2))
+            new_price_cost = round(((position.price_ru / 100) * cost_percent) + position.price_ru, 2)  # новая себестоимость
+
+            if self.calc_way == 2:  # Если пересчитываем процент наценки
+                position = self.PositionOrder(position.sql_id,
+                                              position.parts_id,
+                                              position.parts,
+                                              position.value,
+                                              position.warehouse_value,
+                                              position.price_vendor,
+                                              position.price_ru,
+                                              new_price_cost,
+                                              round((position.price_sell - new_price_cost) / new_price_cost * 100, 2),
+                                              position.price_sell,
+                                              round(position.price_sell - new_price_cost, 2),
+                                              position.sum_ru,
+                                              round(new_price_cost * position.value, 2))
+
+            elif self.calc_way == 1:  # Если пересчитываем цену
+
+                new_price_sell = round(((new_price_cost / 100) * position.percent_markup) + new_price_cost, 2)
+
+                position = self.PositionOrder(position.sql_id,
+                                              position.parts_id,
+                                              position.parts,
+                                              position.value,
+                                              position.warehouse_value,
+                                              position.price_vendor,
+                                              position.price_ru,
+                                              new_price_cost,
+                                              position.percent_markup,
+                                              new_price_sell,
+                                              round(new_price_sell - new_price_cost, 2),
+                                              position.sum_ru,
+                                              round(new_price_cost * position.value, 2))
 
             # Вставляем пересчитаный кортеж в строку
             self.tw_position.item(row, 0).setData(5, position)
@@ -375,7 +404,7 @@ class SupplyBrows(QMainWindow):
 
             # обновляем саму строку
             col = 0
-            for i in (position.parts, position.value, position.warehouse_value, position.price_vendor, position.price_ru, position.price_cost,
+            for i in (position.article, position.parts, position.value, position.warehouse_value, position.price_vendor, position.price_ru, position.price_cost,
                       position.percent_markup, position.price_sell, position.sum_ru, position.sum_cost):
                 item = QTableWidgetItem(str(i))
                 item.setBackground(color)
@@ -499,7 +528,7 @@ class SupplyPositionBrows(QDialog):
         self.acc_item = None  # переменная для хранения итогово списка
 
         self.PositionOrder = namedtuple('PositionOrder', """sql_id parts_id parts value warehouse_value price_vendor price_ru 
-                                                            price_cost percent_markup price_sell price_profit sum_ru sum_cost""")   # Переменная хранения позиции
+                                                            price_cost percent_markup price_sell price_profit sum_ru sum_cost article""")   # Переменная хранения позиции
 
         self.start()
 
@@ -512,6 +541,8 @@ class SupplyPositionBrows(QDialog):
             self.sql_id = self.position.sql_id
             self.sql_sel = self.position.value - self.position.warehouse_value
 
+            self.le_article.setWhatsThis(str(self.position.parts_id))
+            self.le_article.setText(str(self.position.article))
             self.le_part.setWhatsThis(str(self.position.parts_id))
             self.le_part.setText(str(self.position.parts))
             self.le_value.setText(str(self.position.value))
@@ -538,8 +569,10 @@ class SupplyPositionBrows(QDialog):
             self.position = self.PositionOrder(self.sql_id, sql_position.parts.id, sql_position.parts.name,  # Составляем список для последующего сравнения
                                                sql_position.value, sql_position.warehouse_value, sql_position.price_vendor, sql_position.price_ru,
                                                sql_position.price_cost, sql_position.percent_markup, sql_position.price_sell, sql_position.price_profit,
-                                               sql_position.sum_ru, sql_position.sum_cost)
+                                               sql_position.sum_ru, sql_position.sum_cost, sql_position.parts.id)
 
+            self.le_article.setWhatsThis(str(self.position.parts_id))
+            self.le_article.setText(str(self.position.article))
             self.le_part.setWhatsThis(str(self.position.parts_id))
             self.le_part.setText(str(self.position.parts))
             self.le_value.setText(str(self.position.value))
@@ -590,7 +623,8 @@ class SupplyPositionBrows(QDialog):
                                            str_to_decimal(self.le_price_sel.text()),
                                            str_to_decimal(self.le_price_profit.text()),
                                            str_to_decimal(self.le_sum_ru.text()),
-                                           str_to_decimal(self.le_sum_a_cost.text()))
+                                           str_to_decimal(self.le_sum_a_cost.text()),
+                                           self.le_article.text())
 
         if self.position == self.acc_item:  # Если позиция не изменилась то дклаем закрытие окна
             print("нет изменений в пизиции")
@@ -705,7 +739,7 @@ class SupplyPositionBrows(QDialog):
 
         self.calc_profit()
 
-    def ui_calc_markup(self):  # считаем наценку от %
+    def ui_calc_markup(self):  # считаем цену от % наценки
         price_a_rate = str_to_decimal(self.le_price_a_cost.text())
         sum_a_cost = str_to_decimal(self.le_sum_a_cost.text())
         markup_percent = str_to_decimal(self.le_markup.text())
@@ -752,6 +786,9 @@ class SupplyPositionBrows(QDialog):
         self.part = Parts[part_id]
         self.le_part.setText(self.part.name)
         self.le_part.setWhatsThis(str(self.part.id))
+
+        self.le_article.setText(str(self.part.id))
+        self.le_article.setWhatsThis(str(self.part.id))
 
         path_photo = self.inspection_path(self.part.id)
         img = QImage(path_photo + "/main.jpg")
@@ -891,3 +928,20 @@ class SupplyCostOtherBrows(QDialog):
         cost = CostOther[cost_id]
         self.le_cost.setText(cost.name)
         self.le_cost.setWhatsThis(str(cost.id))
+
+
+class SupplyCalcInquiry(QDialog):  # окно справшивающее что пересчитывать в приходе
+    def __init__(self):
+        super(SupplyCalcInquiry, self).__init__()
+        loadUi(getcwd() + '/ui/supply_calc.ui', self)
+        self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
+
+    def ui_percent(self):  # Оставить процент наценки
+        self.done(1)
+        self.close()
+        self.destroy()
+
+    def ui_price(self):  # Оставить цену товара
+        self.done(2)
+        self.close()
+        self.destroy()

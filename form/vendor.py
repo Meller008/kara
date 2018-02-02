@@ -157,6 +157,10 @@ class VendorBrows(QDialog):
         for row in range(self.lw_payment.count()):
             v.payment_methods.add(PaymentMethodVendor[self.lw_payment.item(row).data(5)])
 
+        commit()
+
+        self.main.ui_update()
+
         self.close()
         self.destroy()
 

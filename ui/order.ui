@@ -47,35 +47,35 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
+        <item row="2" column="0">
          <widget class="QLabel" name="label_2">
           <property name="text">
-           <string>Дата заказа</string>
+           <string>Дата выдачи</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
+        <item row="3" column="0">
          <widget class="QLabel" name="label_3">
           <property name="text">
            <string>Клиент</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
+        <item row="4" column="0">
          <widget class="QLabel" name="label_4">
           <property name="text">
            <string>Доставка</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
+        <item row="5" column="0">
          <widget class="QLabel" name="label_5">
           <property name="text">
            <string>Оплата</string>
           </property>
          </widget>
         </item>
-        <item row="5" column="0">
+        <item row="6" column="0">
          <widget class="QLabel" name="label_6">
           <property name="text">
            <string>Заметка</string>
@@ -89,7 +89,7 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
+        <item row="3" column="1">
          <layout class="QHBoxLayout" name="horizontalLayout">
           <property name="spacing">
            <number>2</number>
@@ -110,10 +110,10 @@
           </item>
          </layout>
         </item>
-        <item row="4" column="1">
+        <item row="5" column="1">
          <widget class="QComboBox" name="cb_payment"/>
         </item>
-        <item row="5" column="1">
+        <item row="6" column="1">
          <widget class="QPlainTextEdit" name="le_note">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -135,16 +135,28 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
+        <item row="4" column="1">
          <widget class="QComboBox" name="cb_shipping"/>
         </item>
-        <item row="1" column="1">
+        <item row="2" column="1">
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <property name="spacing">
            <number>2</number>
           </property>
           <item>
-           <widget class="QDateEdit" name="de_date">
+           <widget class="QDateEdit" name="de_date_shipping">
+            <property name="minimumSize">
+             <size>
+              <width>90</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>90</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="calendarPopup">
              <bool>true</bool>
             </property>
@@ -156,6 +168,49 @@
              <string>Товар выдан клиенту</string>
             </property>
            </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_14">
+          <property name="text">
+           <string>Дата заказа</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QDateEdit" name="de_date">
+            <property name="minimumSize">
+             <size>
+              <width>90</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>90</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="calendarPopup">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </item>
@@ -195,6 +250,9 @@
         </item>
         <item row="1" column="1">
          <widget class="QLineEdit" name="le_position_sum">
+          <property name="text">
+           <string>0</string>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -209,6 +267,9 @@
         </item>
         <item row="2" column="1">
          <widget class="QLineEdit" name="le_discount_sum">
+          <property name="text">
+           <string>0</string>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -223,6 +284,9 @@
         </item>
         <item row="3" column="1">
          <widget class="QLineEdit" name="le_all_sum">
+          <property name="text">
+           <string>0</string>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -237,6 +301,9 @@
         </item>
         <item row="4" column="1">
          <widget class="QLineEdit" name="le_value_position">
+          <property name="text">
+           <string>0</string>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -265,6 +332,9 @@
         </item>
         <item row="6" column="1">
          <widget class="QLineEdit" name="le_profit_sum">
+          <property name="text">
+           <string>0</string>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -559,8 +629,8 @@
    <slot>ui_view_client()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>292</x>
-     <y>90</y>
+     <x>294</x>
+     <y>114</y>
     </hint>
     <hint type="destinationlabel">
      <x>289</x>
@@ -709,6 +779,22 @@
     <hint type="destinationlabel">
      <x>-73</x>
      <y>315</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cb_issued</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>de_date_shipping</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>181</x>
+     <y>85</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>128</x>
+     <y>83</y>
     </hint>
    </hints>
   </connection>

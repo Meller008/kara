@@ -1,13 +1,7 @@
 from os import getcwd
-from collections import namedtuple
-from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
+from PyQt5.QtWidgets import QMainWindow
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
-from pony.orm import *
-from my_class.orm_class import Parts
-from form import parts
-from my_class import print_qt
 
 
 class CalcDelivery(QMainWindow):

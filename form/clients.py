@@ -13,7 +13,7 @@ COLOR_WINDOW = "184, 134, 11"
 class ClientList(table.TableList):
     def set_settings(self):
         self.setWindowTitle("Клиенты")  # Имя окна
-        self.resize(400, 270)
+        self.resize(550, 300)
         self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW)  # Цвет бара
 
         self.pb_copy.deleteLater()
@@ -21,12 +21,12 @@ class ClientList(table.TableList):
         self.pb_filter.deleteLater()
 
         # Названия колонк (Имя, Длинна)
-        self.table_header_name = (("Клиент", 100), ("Почта", 100), ("Сайт", 100))
+        self.table_header_name = (("Клиент", 150), ("Почта", 150), ("Сайт", 100), ("Телефон", 100))
 
         self.item = Client  # Класс который будем выводить! Без скобок!
 
         # сам запрос
-        self.query = select((с.id, с.name, с.mail, с.site) for с in Client)
+        self.query = select((с.id, с.name, с.mail, с.site, с.phone) for с in Client)
 
     def ui_add_table_item(self):  # Добавить предмет
         self.vendor_window = ClientBrows(self)

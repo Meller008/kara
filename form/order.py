@@ -96,6 +96,9 @@ class OrderBrows(QMainWindow):
         self.tw_position.horizontalHeader().resizeSection(5, 60)
 
         self.de_date.setDate(QDate.currentDate())
+        self.de_date_shipping.setDate(QDate.currentDate())
+        self.de_date_shipping.setEnabled(False)
+
 
         for s in select(s for s in ShippingMethod):
             self.cb_shipping.addItem(s.name, s.id)
@@ -119,6 +122,11 @@ class OrderBrows(QMainWindow):
             self.le_value_position.setText(str(order.value_position))
             self.le_discount_percent.setText(str(order.discount_percent))
 
+            if order.issued:
+                self.de_date_shipping.setEnabled(True)
+                self.de_date_shipping.setDate(order.date_shipping)
+                self.cb_issued.setChecked(True)
+
             for position in order.order_positions:
                 self.tw_position.insertRow(self.tw_position.rowCount())
                 for i, position_atr in enumerate((position.supply_position.parts.name, position.supply_position.supply.id,
@@ -127,6 +135,14 @@ class OrderBrows(QMainWindow):
                     if i == 0:  # Вставляем ID записи первую колонку!
                         item.setData(5, position.id)
                     self.tw_position.setItem(self.tw_position.rowCount()-1, i, item)
+
+            for position in order.pre_order_positions:
+                self.tw_pre_order.insertRow(self.tw_pre_order.rowCount())
+                for i, position_atr in enumerate((position.product.name, position.value, position.price, position.sum)):
+                    item = QTableWidgetItem(str(position_atr))
+                    if i == 0:  # Вставляем ID записи первую колонку!
+                        item.setData(5, position.id)
+                    self.tw_pre_order.setItem(self.tw_pre_order.rowCount()-1, i, item)
 
     def ui_view_doc(self):
         self.doc_list = OrderDocument(self)
@@ -296,6 +312,7 @@ class OrderBrows(QMainWindow):
     def ui_acc(self):
         value = {
                 "date": self.de_date.date().toPyDate(),
+                "date_shipping": self.de_date_shipping.date().toPyDate(),
                 "sum_shipping": str_to_decimal(self.le_shipping.text()),
                 "sum_position": str_to_decimal(self.le_position_sum.text()),
                 "sum_discount": str_to_decimal(self.le_discount_sum.text()),
@@ -498,7 +515,12 @@ class OrderBrows(QMainWindow):
         book.save(path[0])
 
     @db_session
-    def of_ex_torg12(self):
+    def of_ex_torg12(self, pre_order=False):
+
+        if not self.cb_issued.isChecked():
+            QMessageBox.information(self, "Отгрузка", "Заказ еще не отгружен!", QMessageBox.Ok)
+            return False
+
         path = QFileDialog.getSaveFileName(self, "Сохранение", filter="Excel(*.xlsx)")
         if not path[0]:
             return False
@@ -539,7 +561,6 @@ class OrderBrows(QMainWindow):
         sheet["G17"].border = border_all_big
         sheet["I17"].border = border_all_big
 
-
         all_value = 0
         all_sum = 0
         all_position = 0
@@ -549,46 +570,89 @@ class OrderBrows(QMainWindow):
         row_ex = 22
 
         num = 1
-        for row in range(self.tw_position.rowCount()):
-            sheet.merge_cells("B%s:D%s" % (row_ex, row_ex))
-            sheet.merge_cells("L%s:M%s" % (row_ex, row_ex))
-            sheet.merge_cells("N%s:O%s" % (row_ex, row_ex))
-            sheet.merge_cells("P%s:Q%s" % (row_ex, row_ex))
-            sheet.merge_cells("R%s:S%s" % (row_ex, row_ex))
-            sheet.merge_cells("T%s:U%s" % (row_ex, row_ex))
+        if not pre_order:  # Если это будет предзаказ то втавлять будем из другой таблицы
+            for row in range(self.tw_position.rowCount()):
+                sheet.merge_cells("B%s:D%s" % (row_ex, row_ex))
+                sheet.merge_cells("L%s:M%s" % (row_ex, row_ex))
+                sheet.merge_cells("N%s:O%s" % (row_ex, row_ex))
+                sheet.merge_cells("P%s:Q%s" % (row_ex, row_ex))
+                sheet.merge_cells("R%s:S%s" % (row_ex, row_ex))
+                sheet.merge_cells("T%s:U%s" % (row_ex, row_ex))
 
-            sheet["A%s" % row_ex] = num
-            sheet["B%s" % row_ex] = self.tw_position.item(row, 0).text()
-            sheet["B%s" % row_ex].alignment = Alignment(wrapText=True)
-            # sheet["B%s" % row_ex].font = font_8
-            sheet["E%s" % row_ex] = ""
-            sheet["F%s" % row_ex] = "шт."
-            sheet["G%s" % row_ex] = "796"
-            sheet["H%s" % row_ex] = "кор."
-            sheet["I%s" % row_ex] = ""
-            sheet["J%s" % row_ex] = ""
-            sheet["L%s" % row_ex] = float(self.tw_position.item(row, 2).text())
-            sheet["N%s" % row_ex] = moneyfmt(self.tw_position.item(row, 3).text())
-            sheet["N%s" % row_ex].alignment = ald_right
-            sheet["P%s" % row_ex] = ""
-            sheet["R%s" % row_ex] = "-"
-            sheet["T%s" % row_ex] = "-"
-            sheet["V%s" % row_ex] = moneyfmt(self.tw_position.item(row, 4).text())
-            sheet["V%s" % row_ex].alignment = ald_right
+                sheet["A%s" % row_ex] = num
+                sheet["B%s" % row_ex] = self.tw_position.item(row, 0).text()
+                sheet["B%s" % row_ex].alignment = Alignment(wrapText=True)
+                # sheet["B%s" % row_ex].font = font_8
+                sheet["E%s" % row_ex] = ""
+                sheet["F%s" % row_ex] = "шт."
+                sheet["G%s" % row_ex] = "796"
+                sheet["H%s" % row_ex] = "кор."
+                sheet["I%s" % row_ex] = ""
+                sheet["J%s" % row_ex] = ""
+                sheet["L%s" % row_ex] = float(self.tw_position.item(row, 2).text())
+                sheet["N%s" % row_ex] = moneyfmt(self.tw_position.item(row, 3).text())
+                sheet["N%s" % row_ex].alignment = ald_right
+                sheet["P%s" % row_ex] = ""
+                sheet["R%s" % row_ex] = "-"
+                sheet["T%s" % row_ex] = "-"
+                sheet["V%s" % row_ex] = moneyfmt(self.tw_position.item(row, 4).text())
+                sheet["V%s" % row_ex].alignment = ald_right
 
-            all_value += float(self.tw_position.item(row, 2).text())
-            all_sum += Decimal(self.tw_position.item(row, 4).text())
+                all_value += float(self.tw_position.item(row, 2).text())
+                all_sum += Decimal(self.tw_position.item(row, 4).text())
 
-            sheet.row_dimensions[row_ex].height = 23
+                sheet.row_dimensions[row_ex].height = 23
 
-            if row_break == 25 and self.tw_position.rowCount() > 16:
-                sheet.page_breaks.append(Break(row_ex))
-                list_all += 1
-                row_break = 0
+                if row_break == 25 and self.tw_position.rowCount() > 16:
+                    sheet.page_breaks.append(Break(row_ex))
+                    list_all += 1
+                    row_break = 0
 
-            row_break += 1
-            row_ex += 1
-            num += 1
+                row_break += 1
+                row_ex += 1
+                num += 1
+        else:
+            for row in range(self.tw_pre_order.rowCount()):
+                sheet.merge_cells("B%s:D%s" % (row_ex, row_ex))
+                sheet.merge_cells("L%s:M%s" % (row_ex, row_ex))
+                sheet.merge_cells("N%s:O%s" % (row_ex, row_ex))
+                sheet.merge_cells("P%s:Q%s" % (row_ex, row_ex))
+                sheet.merge_cells("R%s:S%s" % (row_ex, row_ex))
+                sheet.merge_cells("T%s:U%s" % (row_ex, row_ex))
+
+                sheet["A%s" % row_ex] = num
+                sheet["B%s" % row_ex] = self.tw_pre_order.item(row, 0).text()
+                sheet["B%s" % row_ex].alignment = Alignment(wrapText=True)
+                # sheet["B%s" % row_ex].font = font_8
+                sheet["E%s" % row_ex] = ""
+                sheet["F%s" % row_ex] = "шт."
+                sheet["G%s" % row_ex] = "796"
+                sheet["H%s" % row_ex] = "кор."
+                sheet["I%s" % row_ex] = ""
+                sheet["J%s" % row_ex] = ""
+                sheet["L%s" % row_ex] = float(self.tw_pre_order.item(row, 1).text())
+                sheet["N%s" % row_ex] = moneyfmt(self.tw_pre_order.item(row, 2).text())
+                sheet["N%s" % row_ex].alignment = ald_right
+                sheet["P%s" % row_ex] = ""
+                sheet["R%s" % row_ex] = "-"
+                sheet["T%s" % row_ex] = "-"
+                sheet["V%s" % row_ex] = moneyfmt(self.tw_pre_order.item(row, 3).text())
+                sheet["V%s" % row_ex].alignment = ald_right
+
+                all_value += float(self.tw_pre_order.item(row, 1).text())
+                all_sum += Decimal(self.tw_pre_order.item(row, 3).text())
+
+                sheet.row_dimensions[row_ex].height = 23
+
+                if row_break == 25 and self.tw_pre_order.rowCount() > 16:
+                    sheet.page_breaks.append(Break(row_ex))
+                    list_all += 1
+                    row_break = 0
+
+                row_break += 1
+                row_ex += 1
+                num += 1
+
 
         if row_break + 7 > 25:
             sheet.page_breaks.append(Break(row_ex-4))
@@ -856,7 +920,8 @@ class OrderDocument(QDialog):
 
     def ui_acc(self):
         if self.lw_main.selectedItems()[0].text() == "Накладная":
-            self.main.of_ex_torg12()
+            pre_order = self.cb_pre_order.isChecked()
+            self.main.of_ex_torg12(pre_order=pre_order)
 
         elif self.lw_main.selectedItems()[0].text() == "Счет":
             pre_order = self.cb_pre_order.isChecked()
