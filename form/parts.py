@@ -136,7 +136,6 @@ class PartsWindow(QMainWindow):
             self.le_note.setText(product.note)
             self.le_manufacturer.setText(product.manufacturer.name)
             self.le_manufacturer.setWhatsThis(str(product.manufacturer.id))
-            self.le_price.setText(str(product.price))
 
             for machine in product.sewing_machines:
                 self.tw_machine.insertRow(self.tw_machine.rowCount())
@@ -154,11 +153,34 @@ class PartsWindow(QMainWindow):
             img = img.scaled(self.lb_photo.height(), self.lb_photo.width(), Qt.KeepAspectRatio)
             self.lb_photo.setPixmap(QPixmap().fromImage(img))
 
+            supplies = select(supply for supply in SupplyPosition if supply.parts == product and supply.warehouse_value > 0).order_by(lambda s: s.supply.date_shipping)[:]
+            for supply in supplies:
+                self.tw_waruhouse.insertRow(self.tw_waruhouse.rowCount())
+                for i,  item in enumerate((supply.supply.id, supply.supply.date_shipping.strftime("%d.%m.%Y"), "Да" if supply.supply.received else "Нет",
+                                           supply.value, supply.warehouse_value, supply.price_cost, supply.price_sell)):
+                    item_table = QTableWidgetItem(str(item))
+                    if i == 0:  # Вставляем ID записи первую колонку!
+                        item_table.setData(5, supply.id)
+                    self.tw_waruhouse.setItem(self.tw_waruhouse.rowCount()-1, i, item_table)
+
         else:
             self.le_article.setText("new")
 
+        # получим категоии для данного товара!
+        tree_id = self.tree_id or product.tree.id
+        self.le_category.setText(self.search_category(tree_id))
+
+
         self.tw_machine.horizontalHeader().resizeSection(0, 150)
         self.tw_machine.horizontalHeader().resizeSection(1, 150)
+
+        self.tw_waruhouse.horizontalHeader().resizeSection(0, 40)
+        self.tw_waruhouse.horizontalHeader().resizeSection(1, 80)
+        self.tw_waruhouse.horizontalHeader().resizeSection(2, 50)
+        self.tw_waruhouse.horizontalHeader().resizeSection(3, 60)
+        self.tw_waruhouse.horizontalHeader().resizeSection(4, 60)
+        self.tw_waruhouse.horizontalHeader().resizeSection(5, 70)
+        self.tw_waruhouse.horizontalHeader().resizeSection(6, 70)
 
     def inspection_path(self, dir_name):  # Находим путь работника
         if not path.isdir("%s/%s" % (PHOTO_DIR, dir_name)):
@@ -243,13 +265,13 @@ class PartsWindow(QMainWindow):
     def ui_acc(self):
 
         value = {
-                "name": self.le_name.text(),
-                "vendor_name": self.le_vaendor_name.text(),
-                "note": self.le_note.text(),
-                "manufacturer": self.le_manufacturer.whatsThis(),
-                "tree": self.tree_id,
-                "price": str_to_float(self.le_price.text())
-                }
+            "name": self.le_name.text(),
+            "vendor_name": self.le_vaendor_name.text(),
+            "note": self.le_note.text(),
+            "manufacturer": self.le_manufacturer.whatsThis(),
+            "tree": self.tree_id,
+            "price": 0
+        }
 
         if not value["name"] or not value["manufacturer"]:
             QMessageBox.information(self, "Ошибка сохранения", "Не все заполнено", QMessageBox.Ok)
@@ -286,6 +308,14 @@ class PartsWindow(QMainWindow):
     def ui_can(self):
         self.destroy()
         self.close()
+
+    @db_session
+    def search_category(self, tree_id):  # Строим список категории для товара
+        tree = PartsTree[tree_id]
+        if tree.parent:
+            return self.search_category(tree.parent) + "->" + tree.name
+        else:
+            return tree.name
 
     @db_session
     def of_list_select_manufacturer_parts(self, id_manuf):
@@ -391,6 +421,12 @@ class PartsCatalog(QMainWindow):
         self.tw_poduct.horizontalHeader().resizeSection(3, 60)
         self.tw_poduct.horizontalHeader().resizeSection(4, 185)
 
+        self.tw_product_warehouse.horizontalHeader().resizeSection(0, 50)
+        self.tw_product_warehouse.horizontalHeader().resizeSection(1, 80)
+        self.tw_product_warehouse.horizontalHeader().resizeSection(2, 80)
+        self.tw_product_warehouse.horizontalHeader().resizeSection(3, 80)
+        self.tw_product_warehouse.horizontalHeader().resizeSection(4, 80)
+        self.tw_product_warehouse.horizontalHeader().resizeSection(5, 60)
 
         # Получим дерево товаров
         self.tree_parts = Tree()
@@ -521,9 +557,14 @@ class PartsCatalog(QMainWindow):
 
     def ui_dc_warehouse(self, item):
         if self.main and self.select_warehouse:
-            self.main.of_tree_select_catalog_warehouse(item.data(5))
-            self.close()
-            self.destroy()
+            id = item.data(5)
+            if SupplyPosition[id].supply.received:
+                self.main.of_tree_select_catalog_warehouse(id)
+                self.close()
+                self.destroy()
+            else:
+                QMessageBox.information(self, "Ошибка склада", "Эта позиция еще не пришла на склад!", QMessageBox.Ok)
+                return False
 
     def ui_dc_product(self, item):
         if self.main and self.select_product:
@@ -550,16 +591,19 @@ class PartsCatalog(QMainWindow):
         self.le_manufacturer.setText(str(product.manufacturer.name))
         self.le_note.setText(str(product.note))
 
+        # получим категоии для данного товара!
+        self.le_category.setText(self.search_category(product.tree.id))
+
         for machine in product.sewing_machines:
-                self.tw_product_machine.insertRow(self.tw_product_machine.rowCount())
+            self.tw_product_machine.insertRow(self.tw_product_machine.rowCount())
 
-                item = QTableWidgetItem(machine.name)
-                item.setData(5, machine.id)
-                self.tw_product_machine.setItem(self.tw_product_machine.rowCount() - 1, 0, item)
+            item = QTableWidgetItem(machine.name)
+            item.setData(5, machine.id)
+            self.tw_product_machine.setItem(self.tw_product_machine.rowCount() - 1, 0, item)
 
-                item = QTableWidgetItem(machine.manufacturer.name)
-                item.setData(5, machine.id)
-                self.tw_product_machine.setItem(self.tw_product_machine.rowCount() - 1, 1, item)
+            item = QTableWidgetItem(machine.manufacturer.name)
+            item.setData(5, machine.id)
+            self.tw_product_machine.setItem(self.tw_product_machine.rowCount() - 1, 1, item)
 
         path_photo = self.inspection_path(product.id)
         img = QImage(path_photo + "/main.jpg")
@@ -567,8 +611,7 @@ class PartsCatalog(QMainWindow):
         self.lb_phot.setPixmap(QPixmap().fromImage(img))
 
         for pos in select(pos for pos in SupplyPosition
-                      if pos.parts.id == product.id and pos.supply.received and pos.warehouse_value):
-
+                          if pos.parts.id == product.id and pos.warehouse_value):
             self.tw_product_warehouse.insertRow(self.tw_product_warehouse.rowCount())
 
             item = QTableWidgetItem(str(pos.supply.id))
@@ -590,6 +633,10 @@ class PartsCatalog(QMainWindow):
             item = QTableWidgetItem(str(pos.warehouse_value))
             item.setData(5, pos.id)
             self.tw_product_warehouse.setItem(self.tw_product_warehouse.rowCount() - 1, 4, item)
+
+            item = QTableWidgetItem("Да" if pos.supply.received else "Нет")
+            item.setData(6, pos.id)
+            self.tw_product_warehouse.setItem(self.tw_product_warehouse.rowCount() - 1, 5, item)
 
     @db_session
     def filter_machine(self):  # Выводит список оборудования в зависимости от фильтра
@@ -681,6 +728,7 @@ class PartsCatalog(QMainWindow):
 
         self.tw_poduct.setSortingEnabled(True)
 
+    @db_session
     def inspection_path(self, dir_name):  # Находим путь работника
         if not path.isdir("%s/%s" % (PHOTO_DIR, dir_name)):
             try:
@@ -691,6 +739,13 @@ class PartsCatalog(QMainWindow):
                 return False
         else:
             return "%s/%s" % (PHOTO_DIR, dir_name)
+
+    def search_category(self, tree_id):  # Строим список категории для товара
+        tree = PartsTree[tree_id]
+        if tree.parent:
+            return self.search_category(tree.parent) + "->" + tree.name
+        else:
+            return tree.name
 
     def add_filter(self, where, add, and_add=True):
         if where:
@@ -704,10 +759,9 @@ class PartsCatalog(QMainWindow):
         return where
 
     def search(self, id_tree, tree_class):  # Ищем ветви дерева и при этом добавляем их в QTreeWidgetItem
-        item = QTreeWidgetItem((tree_class[id_tree].tag, ))  # Создаем полученый Id
+        item = QTreeWidgetItem((tree_class[id_tree].tag,))  # Создаем полученый Id
         item.setData(0, 5, tree_class[id_tree].identifier)  # Добавляем ID
         for id in tree_class[id_tree].fpointer:  # Смотрим есть ли дети у этой ветви, если есть обзодим их
             item.addChild(self.search(id, tree_class))  # Добавляем детей этой ветви!
 
         return item
-

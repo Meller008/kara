@@ -556,6 +556,11 @@ class SupplyPositionBrows(QDialog):
             self.le_sum_ru.setText(str(self.position.sum_ru))
             self.le_sum_a_cost.setText(str(self.position.sum_cost))
 
+            path_photo = self.inspection_path(self.position.parts_id)
+            img = QImage(path_photo + "/main.jpg")
+            img = img.scaled(self.lb_photo.height(), self.lb_photo.width(), Qt.KeepAspectRatio)
+            self.lb_photo.setPixmap(QPixmap().fromImage(img))
+
             self.ui_calc_sum()
             self.ui_calc_markup_percent()
             self.calc_profit()
@@ -587,6 +592,11 @@ class SupplyPositionBrows(QDialog):
             self.le_sum_a_cost.setText(str(self.position.sum_cost))
 
             self.tb_product.setEnabled(False)
+
+            path_photo = self.inspection_path(self.position.parts_id)
+            img = QImage(path_photo + "/main.jpg")
+            img = img.scaled(self.lb_photo.height(), self.lb_photo.width(), Qt.KeepAspectRatio)
+            self.lb_photo.setPixmap(QPixmap().fromImage(img))
 
             self.ui_calc_sum()
             self.ui_calc_markup_percent()
@@ -922,6 +932,17 @@ class SupplyCostOtherBrows(QDialog):
             self.le_sum.setText(str(round(sum/value, 2)))
         else:
             self.le_sum.setText("ОШИБКА")
+
+    def inspection_path(self, dir_name):  # Находим путь работника
+        if not path.isdir("%s/%s" % (PHOTO_DIR, dir_name)):
+            try:
+                mkdir("%s/%s" % (PHOTO_DIR, dir_name))
+                return "%s/%s" % (PHOTO_DIR, dir_name)
+            except:
+                QMessageBox.critical(self, "Ошибка файлы", "Нет доступа к корневому диалогу, файлы недоступны", QMessageBox.Ok)
+                return False
+        else:
+            return "%s/%s" % (PHOTO_DIR, dir_name)
 
     @db_session
     def of_list_select_other_cost(self, cost_id):

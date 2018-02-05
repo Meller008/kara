@@ -1,4 +1,4 @@
-from os import getcwd
+from os import getcwd, path as pathh
 from collections import namedtuple
 from decimal import Decimal
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QTableWidgetItem, QDialog, QFileDialog
@@ -25,7 +25,7 @@ COLOR_WINDOW = "188, 143, 143"
 class OrderList(table.TableList):
     def set_settings(self):
         self.setWindowTitle("Заказы")  # Имя окна
-        self.resize(500, 270)
+        self.resize(600, 270)
         self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW)  # Цвет бара
 
         self.pb_copy.deleteLater()
@@ -33,12 +33,12 @@ class OrderList(table.TableList):
         self.pb_filter.deleteLater()
 
         # Названия колонк (Имя, Длинна)
-        self.table_header_name = (("№", 30), ("Клиент", 75), ("Дата заказа", 80), ("Позиций", 55), ("Сумма", 75))
+        self.table_header_name = (("№", 30), ("Клиент", 140), ("Дата заказа", 80), ("Оплата", 140), ("Позиций", 55), ("Сумма", 75))
 
         self.item = Order  # Класс который будем выводить! Без скобок!
 
         # сам запрос
-        self.query = select((o.id, o.id, o.client.name, o.date, o.value_position, o.sum_all) for o in Order)
+        self.query = select((o.id, o.id, o.client.name, o.date, o.payment_method.name, o.value_position, o.sum_all) for o in Order)
 
     def ui_add_table_item(self):  # Добавить предмет
         self.add_supply = OrderBrows(self)
@@ -440,7 +440,7 @@ class OrderBrows(QMainWindow):
 
     @db_session
     def of_ex_score(self, pre_order=False):  # Составляем счет
-        path = QFileDialog.getSaveFileName(self, "Сохранение", filter="Excel(*.xlsx)")
+        path = QFileDialog.getSaveFileName(self, "Сохранение", pathh.expanduser("~/Desktop/"), filter="Excel(*.xlsx)")
         if not path[0]:
             return False
 
@@ -516,12 +516,7 @@ class OrderBrows(QMainWindow):
 
     @db_session
     def of_ex_torg12(self, pre_order=False):
-
-        if not self.cb_issued.isChecked():
-            QMessageBox.information(self, "Отгрузка", "Заказ еще не отгружен!", QMessageBox.Ok)
-            return False
-
-        path = QFileDialog.getSaveFileName(self, "Сохранение", filter="Excel(*.xlsx)")
+        path = QFileDialog.getSaveFileName(self, "Сохранение", pathh.expanduser("~/Desktop/"), filter="Excel(*.xlsx)")
         if not path[0]:
             return False
 
