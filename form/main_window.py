@@ -1,7 +1,7 @@
 from os import getcwd
 from PyQt5.QtWidgets import QMainWindow, QMdiSubWindow
 from PyQt5.uic import loadUi
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QBrush, QImage
 from form import country, shipping, payment, vendor, sewing_machine, parts, supply, clients, order, label,\
     calc_delivery
 
@@ -11,6 +11,14 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         loadUi(getcwd() + '/ui/main_window.ui', self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
+        # self.mdi.setBackground(QBrush(QImage(getcwd() + "/images/logo_mdi.png")))
+
+        self.tabWidget.setTabIcon(0, QIcon(getcwd() + "/images/supply.ico"))
+        self.tabWidget.setTabIcon(1, QIcon(getcwd() + "/images/order.ico"))
+        self.tabWidget.setTabIcon(2, QIcon(getcwd() + "/images/product.ico"))
+        self.tabWidget.setTabIcon(3, QIcon(getcwd() + "/images/machine.ico"))
+        self.tabWidget.setTabIcon(4, QIcon(getcwd() + "/images/warehouse.ico"))
+        self.tabWidget.setTabIcon(5, QIcon(getcwd() + "/images/other_tab.ico"))
 
         self.show()
 

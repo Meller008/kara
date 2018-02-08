@@ -149,7 +149,7 @@ class PartsWindow(QMainWindow):
                 self.tw_machine.setItem(self.tw_machine.rowCount() - 1, 1, item)
 
             path_photo = self.inspection_path(product.id)
-            img = QImage(path_photo + "/main.jpg")
+            img = QImage(path_photo + "/%s.jpg" % self.id)
             img = img.scaled(self.lb_photo.height(), self.lb_photo.width(), Qt.KeepAspectRatio)
             self.lb_photo.setPixmap(QPixmap().fromImage(img))
 
@@ -202,7 +202,7 @@ class PartsWindow(QMainWindow):
         url = QInputDialog.getText(self, "Введите URL фото", "URL")[0]
 
         if url:
-            path_photo = self.inspection_path(self.id) + "/main.jpg"
+            path_photo = self.inspection_path(self.id) + "/%s.jpg" % self.id
             if path.isfile(path_photo):
                 remove(path_photo)
 
@@ -293,11 +293,11 @@ class PartsWindow(QMainWindow):
             path_photo = self.inspection_path(p.id)
             if path_photo:
                 if self.photo_del:
-                    path_photo += "/main.jpg"
+                    path_photo += "/%s.jpg" % self.id
                     remove(path_photo)
 
                 if self.photo_dir:
-                    path_photo += "/main.jpg"
+                    path_photo += "/%s.jpg" % self.id
                     if self.photo_dir != path_photo:
                         shutil.copy2(self.photo_dir, path_photo)
 
@@ -358,11 +358,11 @@ class PartsWindow(QMainWindow):
             self.of_select_sewing_machine(machine.id)
 
         path_photo = self.inspection_path(part_copy.id)
-        img = QImage(path_photo + "/main.jpg")
+        img = QImage(path_photo + "/%s.jpg" % self.id)
         img = img.scaled(self.lb_photo.height(), self.lb_photo.width(), Qt.KeepAspectRatio)
         self.lb_photo.setPixmap(QPixmap().fromImage(img))
 
-        self.photo_dir = path_photo + "/main.jpg"
+        self.photo_dir = path_photo + "/%s.jpg" % self.id
         self.photo_del = False
 
 
@@ -426,6 +426,7 @@ class PartsCatalog(QMainWindow):
         self.tw_product_warehouse.horizontalHeader().resizeSection(2, 80)
         self.tw_product_warehouse.horizontalHeader().resizeSection(3, 80)
         self.tw_product_warehouse.horizontalHeader().resizeSection(4, 80)
+        self.tw_product_warehouse.horizontalHeader().resizeSection(5, 70)
         self.tw_product_warehouse.horizontalHeader().resizeSection(5, 60)
 
         # Получим дерево товаров
@@ -606,7 +607,7 @@ class PartsCatalog(QMainWindow):
             self.tw_product_machine.setItem(self.tw_product_machine.rowCount() - 1, 1, item)
 
         path_photo = self.inspection_path(product.id)
-        img = QImage(path_photo + "/main.jpg")
+        img = QImage(path_photo + "/%s.jpg" % _id)
         img = img.scaled(self.lb_phot.height(), self.lb_phot.width(), Qt.KeepAspectRatio)
         self.lb_phot.setPixmap(QPixmap().fromImage(img))
 
@@ -634,9 +635,13 @@ class PartsCatalog(QMainWindow):
             item.setData(5, pos.id)
             self.tw_product_warehouse.setItem(self.tw_product_warehouse.rowCount() - 1, 4, item)
 
+            item = QTableWidgetItem(str(pos.price_sell))
+            item.setData(5, pos.id)
+            self.tw_product_warehouse.setItem(self.tw_product_warehouse.rowCount() - 1, 5, item)
+
             item = QTableWidgetItem("Да" if pos.supply.received else "Нет")
             item.setData(6, pos.id)
-            self.tw_product_warehouse.setItem(self.tw_product_warehouse.rowCount() - 1, 5, item)
+            self.tw_product_warehouse.setItem(self.tw_product_warehouse.rowCount() - 1, 6, item)
 
     @db_session
     def filter_machine(self):  # Выводит список оборудования в зависимости от фильтра

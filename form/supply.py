@@ -557,7 +557,7 @@ class SupplyPositionBrows(QDialog):
             self.le_sum_a_cost.setText(str(self.position.sum_cost))
 
             path_photo = self.inspection_path(self.position.parts_id)
-            img = QImage(path_photo + "/main.jpg")
+            img = QImage(path_photo + "/%s.jpg" % self.position.parts_id)
             img = img.scaled(self.lb_photo.height(), self.lb_photo.width(), Qt.KeepAspectRatio)
             self.lb_photo.setPixmap(QPixmap().fromImage(img))
 
@@ -594,7 +594,7 @@ class SupplyPositionBrows(QDialog):
             self.tb_product.setEnabled(False)
 
             path_photo = self.inspection_path(self.position.parts_id)
-            img = QImage(path_photo + "/main.jpg")
+            img = QImage(path_photo + "/%s.jpg" % self.position.parts_id)
             img = img.scaled(self.lb_photo.height(), self.lb_photo.width(), Qt.KeepAspectRatio)
             self.lb_photo.setPixmap(QPixmap().fromImage(img))
 
@@ -801,7 +801,7 @@ class SupplyPositionBrows(QDialog):
         self.le_article.setWhatsThis(str(self.part.id))
 
         path_photo = self.inspection_path(self.part.id)
-        img = QImage(path_photo + "/main.jpg")
+        img = QImage(path_photo + "/%s.jpg" % self.part.id)
         img = img.scaled(self.lb_photo.height(), self.lb_photo.width(), Qt.KeepAspectRatio)
         self.lb_photo.setPixmap(QPixmap().fromImage(img))
 
@@ -929,9 +929,9 @@ class SupplyCostOtherBrows(QDialog):
         sum = str_to_decimal(self.le_sum.text())
 
         if value and sum:
-            self.le_sum.setText(str(round(sum/value, 2)))
+            self.le_price.setText(str(round(sum/value, 2)))
         else:
-            self.le_sum.setText("ОШИБКА")
+            self.le_price.setText("ОШИБКА")
 
     def inspection_path(self, dir_name):  # Находим путь работника
         if not path.isdir("%s/%s" % (PHOTO_DIR, dir_name)):

@@ -38,7 +38,7 @@ class OrderList(table.TableList):
         self.item = Order  # Класс который будем выводить! Без скобок!
 
         # сам запрос
-        self.query = select((o.id, o.id, o.client.name, o.date, o.payment_method.name, o.value_position, o.sum_all) for o in Order)
+        self.query = select((o.id, o.id, o.client.name, o.date, o.payment_method.name, o.value_position, o.sum_all) for o in Order).order_by(-1)
 
     def ui_add_table_item(self):  # Добавить предмет
         self.add_supply = OrderBrows(self)
@@ -220,7 +220,7 @@ class OrderBrows(QMainWindow):
                 item = QTableWidgetItem(str(i))
                 if col == 0:  # Вставляем список со значениями только в первую колонку!
                     item.setData(5, position)
-                self.tw_position.setItem(self.tw_position.rowCount()-1, col, item)
+                self.tw_position.setItem(row, col, item)
                 col += 1
 
             self.pb_acc.setEnabled(False)
@@ -250,7 +250,7 @@ class OrderBrows(QMainWindow):
                 item = QTableWidgetItem(str(i))
                 if col == 0:  # Вставляем список со значениями только в первую колонку!
                     item.setData(5, position)
-                self.tw_pre_order.setItem(self.tw_pre_order.rowCount()-1, col, item)
+                self.tw_pre_order.setItem(row, col, item)
                 col += 1
 
     def ui_del_position(self):  # Удаляем позицию товара
@@ -283,10 +283,10 @@ class OrderBrows(QMainWindow):
             self.pb_acc.setEnabled(False)
             self.pb_calc.setStyleSheet("background-color: rgb(255, 61, 44);")
         else:
-            result = QMessageBox.question(self, "Удаление", "Точно удалить товар?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            result = QMessageBox.question(self, "Удаление", "Точно удалить предзаказаный товар?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if result == 16384:
                 try:
-                    row = self.tw_position.currentRow()
+                    row = self.tw_pre_order.currentRow()
                 except:
                     QMessageBox.critical(self, "Ошибка Удаления", "Выделите товар который хотите удалить", QMessageBox.Ok)
                     return False
@@ -960,7 +960,7 @@ class PreOrderPositionBrows(QDialog):
         elif isinstance(self.position, int):
             self.sql_id = self.position  # Записываем Id строки
             sql_position = PreOrderPosition[self.sql_id]  # Получаем позицию из бд
-            self.position = self.PositionCost(self.sql_id, sql_position.product.id, sql_position.product.name,  # Составляем список для последующего сравнения
+            self.position = self.PositionPreOrder(self.sql_id, sql_position.product.id, sql_position.product.name,  # Составляем список для последующего сравнения
                                               sql_position.value, sql_position.price, sql_position.sum)
             self.le_parts.setWhatsThis(str(self.position.product_id))
             self.le_parts.setText(str(self.position.product))
@@ -1032,9 +1032,9 @@ class PreOrderPositionBrows(QDialog):
         sum = str_to_decimal(self.le_sum.text())
 
         if value and sum:
-            self.le_sum.setText(str(round(sum/value, 2)))
+            self.le_price.setText(str(round(sum/value, 2)))
         else:
-            self.le_sum.setText("ОШИБКА")
+            self.le_price.setText("ОШИБКА")
 
     @db_session
     def of_tree_select_catalog_product(self, _id):

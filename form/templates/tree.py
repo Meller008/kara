@@ -256,7 +256,7 @@ class TreeList(QMainWindow):
         info.rb_old.close()
         info.rb_new.close()
         info.le_name.setText(parent_name)
-        info.le_position.setText(str(tree.position))
+        info.le_position.setText(str(tree.position or ""))
         if info.exec() == 0:
             return False
 
@@ -324,14 +324,14 @@ class TreeList(QMainWindow):
             except:
                 QMessageBox.critical(self, "Ошибка Удаления", "Выделите элемент который хотите удалить", QMessageBox.Ok)
                 return False
-            try:
-                self.item[id_item[0].data(5)].delete()
-            except ConstraintError:
-                QMessageBox.critical(self, "Ошибка Удаления", "Этот элемент используется", QMessageBox.Ok)
-                return False
-            commit()
-            self.set_table_info()
-            # self.set_tree_info()
+            if id_item:
+                try:
+                    self.item[id_item[0].data(5)].delete()
+                except ConstraintError:
+                    QMessageBox.critical(self, "Ошибка Удаления", "Этот элемент используется", QMessageBox.Ok)
+                    return False
+                commit()
+                self.set_table_info()
 
     def ui_filter_table(self):
         pass
