@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>836</width>
+    <height>292</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Экспорт товаров</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <property name="leftMargin">
+     <number>1</number>
+    </property>
+    <property name="topMargin">
+     <number>1</number>
+    </property>
+    <property name="rightMargin">
+     <number>1</number>
+    </property>
+    <property name="bottomMargin">
+     <number>1</number>
+    </property>
+    <property name="spacing">
+     <number>2</number>
+    </property>
+    <item row="1" column="0">
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="spacing">
+         <number>2</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QToolButton" name="toolButton_3">
+          <property name="text">
+           <string>Добавить</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="toolButton_2">
+          <property name="text">
+           <string>Убрать</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="toolButton_4">
+          <property name="text">
+           <string>Добавить все</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Проверка</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="cb_view_none">
+          <property name="text">
+           <string>без строк</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Генерировать</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_all">
+          <property name="text">
+           <string>Все</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_new">
+          <property name="text">
+           <string>Новые</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="1" column="0">
+       <widget class="QTableWidget" name="tw_position">
+        <property name="font">
+         <font>
+          <family>Tahoma</family>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <attribute name="verticalHeaderDefaultSectionSize">
+         <number>18</number>
+        </attribute>
+        <attribute name="verticalHeaderMinimumSectionSize">
+         <number>16</number>
+        </attribute>
+        <column>
+         <property name="text">
+          <string>Артикул</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Название</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>url</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>title</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>h1</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>2</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Фаил экспорта</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="le_path"/>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton">
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>Экспорт</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_3">
+        <property name="text">
+         <string>Генерировать</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_2">
+        <property name="text">
+         <string>Проверить</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>toolButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_file_brows()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>408</x>
+     <y>18</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>307</x>
+     <y>0</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_add_position()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>22</x>
+     <y>40</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>41</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_dell_position()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>102</x>
+     <y>31</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>108</x>
+     <y>0</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_add_all_position()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>150</x>
+     <y>33</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>154</x>
+     <y>0</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_export()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>485</x>
+     <y>17</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>386</x>
+     <y>0</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_checking_position()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>644</x>
+     <y>16</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>384</x>
+     <y>0</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tw_position</sender>
+   <signal>cellDoubleClicked(int,int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_open_product()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>84</x>
+     <y>110</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>110</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_generation()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>513</x>
+     <y>15</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>515</x>
+     <y>-45</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>ui_file_brows()</slot>
+  <slot>ui_add_position()</slot>
+  <slot>ui_dell_position()</slot>
+  <slot>ui_add_all_position()</slot>
+  <slot>ui_export()</slot>
+  <slot>ui_checking_position()</slot>
+  <slot>ui_open_product()</slot>
+  <slot>ui_generation()</slot>
+ </slots>
+</ui>

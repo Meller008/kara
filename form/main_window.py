@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QMdiSubWindow
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QIcon, QBrush, QImage
 from form import country, shipping, payment, vendor, sewing_machine, parts, supply, clients, order, label,\
-    calc_delivery
+    calc_delivery, site
 
 
 class MainWindow(QMainWindow):
@@ -181,3 +181,11 @@ class MainWindow(QMainWindow):
         self.mdi.addSubWindow(self.sub_calc_delivery)
         self.sub_calc_delivery.resize(self.calc_delivery.size())
         self.sub_calc_delivery.show()
+
+    def ui_view_export_site_product(self):
+        self.site_export = site.SiteExportProduct()
+        self.sub_site_export = QMdiSubWindow()
+        self.sub_site_export.setWidget(self.site_export)
+        self.mdi.addSubWindow(self.sub_site_export)
+        self.sub_site_export.resize(self.site_export.size())
+        self.sub_site_export.show()

@@ -90,6 +90,7 @@ class Parts(db.Entity):
     supply_positions = Set('SupplyPosition', cascade_delete=False)
     pre_order_positions = Set('PreOrderPosition', cascade_delete=False)
     sewing_machines = Set('SewingMachine')
+    site_info = Optional('PartsSiteInfo')
 
 
 class SewingMachine(db.Entity):
@@ -235,6 +236,21 @@ class PreOrderPosition(db.Entity):
     sum = Required(Decimal)
     order = Required(Order)
     product = Required(Parts)
+
+
+class PartsSiteInfo(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    name = Optional(str)
+    categories = Optional(str)
+    main_category = Optional(str)
+    price = Optional(Decimal)
+    in_warehouse = Optional(bool)
+    seo_keyword = Optional(str)
+    description = Optional(str)
+    title = Optional(str)
+    meta_description = Optional(str)
+    h1 = Optional(str)
+    parts = Optional(Parts)
 
 sql_debug(True)
 db.generate_mapping(create_tables=True, check_tables=True)

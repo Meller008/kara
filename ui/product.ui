@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>484</width>
-    <height>423</height>
+    <height>488</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,160 +45,6 @@
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
-    </item>
-    <item row="0" column="0" rowspan="2">
-     <layout class="QGridLayout" name="gridLayout_4">
-      <property name="spacing">
-       <number>2</number>
-      </property>
-      <item row="5" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Заметка</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="le_name"/>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>Фото</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Название</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QLineEdit" name="le_note"/>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_7">
-        <property name="text">
-         <string>Название пост.</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QLineEdit" name="le_vaendor_name"/>
-      </item>
-      <item row="7" column="0">
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="4" column="1">
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <property name="spacing">
-         <number>2</number>
-        </property>
-        <item>
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QToolButton" name="toolButton_6">
-          <property name="text">
-           <string>С сайта</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="toolButton_5">
-          <property name="text">
-           <string>Изменить</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="toolButton_4">
-          <property name="text">
-           <string>Удалить</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="le_article">
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Артикул</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Производитель</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="1">
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QLineEdit" name="le_manufacturer">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="toolButton">
-          <property name="text">
-           <string>...</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_6">
-        <property name="text">
-         <string>Категория</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="le_category">
-        <property name="font">
-         <font>
-          <family>Tahoma</family>
-          <pointsize>7</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </item>
     <item row="2" column="0" colspan="2">
      <widget class="QTabWidget" name="tabWidget">
@@ -417,6 +263,343 @@
       </item>
      </layout>
     </item>
+    <item row="0" column="0">
+     <widget class="QTabWidget" name="tabWidget_info">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="title">
+        <string>Инфо</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout_5">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Заметка</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="le_name"/>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Фото</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Название</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLineEdit" name="le_note"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Название пост.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="le_vaendor_name"/>
+          </item>
+          <item row="7" column="0">
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="4" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <property name="spacing">
+             <number>2</number>
+            </property>
+            <item>
+             <widget class="QToolButton" name="toolButton_6">
+              <property name="text">
+               <string>С сайта</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="toolButton_5">
+              <property name="text">
+               <string>Изменить</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="toolButton_4">
+              <property name="text">
+               <string>Удалить</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="le_article">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Артикул</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Производитель</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLineEdit" name="le_manufacturer">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="toolButton">
+              <property name="text">
+               <string>...</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Категория</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="le_category">
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>7</pointsize>
+             </font>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_4">
+       <attribute name="title">
+        <string>Для сайта</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <property name="spacing">
+         <number>1</number>
+        </property>
+        <item row="1" column="1">
+         <widget class="QScrollArea" name="scrollArea">
+          <property name="widgetResizable">
+           <bool>false</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>255</width>
+             <height>241</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_7">
+            <property name="leftMargin">
+             <number>1</number>
+            </property>
+            <property name="topMargin">
+             <number>1</number>
+            </property>
+            <property name="rightMargin">
+             <number>1</number>
+            </property>
+            <property name="bottomMargin">
+             <number>1</number>
+            </property>
+            <property name="spacing">
+             <number>1</number>
+            </property>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="le_site_name"/>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLineEdit" name="le_h1"/>
+            </item>
+            <item row="4" column="1">
+             <widget class="QLineEdit" name="le_url"/>
+            </item>
+            <item row="5" column="1">
+             <widget class="QLineEdit" name="le_seo_descriotion"/>
+            </item>
+            <item row="6" column="1">
+             <widget class="QLineEdit" name="le_site_price">
+              <property name="text">
+               <string>0</string>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="1">
+             <widget class="QLineEdit" name="le_site_main_categoy"/>
+            </item>
+            <item row="9" column="1">
+             <widget class="QLineEdit" name="le_site_categoryes"/>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_10">
+              <property name="text">
+               <string>Описание</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_9">
+              <property name="text">
+               <string>H1</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="le_title"/>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_11">
+              <property name="text">
+               <string>SEO URL</string>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="0">
+             <widget class="QLabel" name="label_15">
+              <property name="text">
+               <string>Категирри</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>Название</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_16">
+              <property name="text">
+               <string>Тайтл</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QPlainTextEdit" name="pt_description"/>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_12">
+              <property name="text">
+               <string>SEO descr</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QLabel" name="label_13">
+              <property name="text">
+               <string>Цена</string>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="0">
+             <widget class="QLabel" name="label_14">
+              <property name="text">
+               <string>Категория</string>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="1">
+             <widget class="QCheckBox" name="cb_warehouse">
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="0">
+             <widget class="QLabel" name="label_17">
+              <property name="text">
+               <string>на складе</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QToolBar" name="toolBar">
@@ -433,63 +616,21 @@
     <bool>false</bool>
    </attribute>
    <addaction name="pb_copy"/>
+   <addaction name="pb_site"/>
   </widget>
   <action name="pb_copy">
    <property name="text">
     <string>Скопировать</string>
    </property>
   </action>
+  <action name="pb_site">
+   <property name="text">
+    <string>Генерировать сайт</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
-  <connection>
-   <sender>toolButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>ui_view_manufacturer()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>278</x>
-     <y>144</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>416</x>
-     <y>-60</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>toolButton_5</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>ui_change_photo()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>219</x>
-     <y>98</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>334</x>
-     <y>-50</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>toolButton_4</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>ui_del_photo()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>278</x>
-     <y>98</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>333</x>
-     <y>-78</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>toolButton_3</sender>
    <signal>clicked()</signal>
@@ -555,22 +696,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>toolButton_6</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>ui_web_photo()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>156</x>
-     <y>109</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>158</x>
-     <y>-57</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>pb_copy</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
@@ -586,6 +711,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pb_site</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_generate_site()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>241</x>
+     <y>243</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ui_view_manufacturer()</slot>
@@ -597,5 +738,6 @@
   <slot>ui_can()</slot>
   <slot>ui_web_photo()</slot>
   <slot>ui_copy()</slot>
+  <slot>ui_generate_site()</slot>
  </slots>
 </ui>

@@ -8,14 +8,16 @@ from PyQt5.QtGui import QIcon, QImage, QPixmap
 from PyQt5.QtCore import Qt
 from pony.orm import *
 from my_class.orm_class import Parts, PartsTree, ManufacturerParts, SewingMachine, TypeSewingMachine, ManufacturerSewingMachine, \
-    SupplyPosition
+    SupplyPosition, PartsSiteInfo
 from form import sewing_machine
 from form.templates import tree, list
-from function.str_to import str_to_float
+from function.translate import translate
+from function.str_to import str_to_decimal
 
 COLOR_WINDOW_PARTS = "0, 102, 102"
 COLOR_WINDOW_PARTS_MANUFACTURER = "204, 255, 255"
 PHOTO_DIR = getcwd() + "/photo/"
+SITE_ADD_TEXT = ", купить в магазине КАРА"
 
 db = Database()
 db.bind(provider='mysql', host='192.168.1.24', user='kara', passwd='Aa088011', db='kara')
@@ -30,7 +32,7 @@ class PartsList(tree.TreeList):
         self.pb_table_double.deleteLater()
 
         # Названия колонк (Имя, Длинна)
-        self.table_header_name = (("Артикул", 60), ("Имя", 150), ("Цена", 60), ("Заметка", 250))
+        self.table_header_name = (("Артикул", 60), ("Имя", 260), ("Цена", 60), ("Заметка", 180))
 
         self.tree_orm = PartsTree  # Класс дерева!
 
@@ -136,6 +138,18 @@ class PartsWindow(QMainWindow):
             self.le_note.setText(product.note)
             self.le_manufacturer.setText(product.manufacturer.name)
             self.le_manufacturer.setWhatsThis(str(product.manufacturer.id))
+
+            if product.site_info.id:
+                self.le_title.setText(product.site_info.title)
+                self.le_site_name.setText(product.site_info.name)
+                self.le_h1.setText(product.site_info.h1)
+                self.pt_description.setPlainText(product.site_info.description)
+                self.le_url.setText(product.site_info.seo_keyword)
+                self.le_seo_descriotion.setText(product.site_info.meta_description)
+                self.le_site_price.setText(str(product.site_info.price))
+                self.le_site_main_categoy.setText(product.site_info.main_category)
+                self.le_site_categoryes.setText(product.site_info.categories)
+                self.cb_warehouse.setChecked(product.site_info.in_warehouse)
 
             for machine in product.sewing_machines:
                 self.tw_machine.insertRow(self.tw_machine.rowCount())
@@ -261,6 +275,33 @@ class PartsWindow(QMainWindow):
         self.parts_list.setWindowModality(Qt.ApplicationModal)
         self.parts_list.show()
 
+    def ui_generate_site(self):  # Генерируем данные для сайта
+        self.le_title.setText(self.le_name.text() + SITE_ADD_TEXT)
+        self.le_site_name.setText(self.le_name.text())
+        self.le_h1.setText(self.le_name.text())
+
+        self.le_url.setText(translate(self.le_name.text()))
+        self.le_seo_descriotion.setText(self.le_name.text() + SITE_ADD_TEXT)
+
+        for_text = ""
+        if self.le_note.text():
+            for_text += "<p>%s</p>" % self.le_note.text()
+        if self.tw_machine.rowCount() > 0:
+            for_text += "<p><b>Подходит</b></p><ul>"
+            for row in range(self.tw_machine.rowCount()):
+                for_text += "<li>%s %s</li>" % (self.tw_machine.item(row, 1).text(), self.tw_machine.item(row, 0).text())
+            else:
+                for_text += "</ul>"
+
+        self.pt_description.setPlainText(for_text)
+
+        if self.tw_waruhouse.rowCount() > 0:
+            self.cb_warehouse.setChecked(True)
+            self.le_site_price.setText(str(str_to_decimal(self.tw_waruhouse.item(0, 6).text())))
+        else:
+            self.cb_warehouse.setChecked(False)
+            self.le_site_price.setText("0")
+
     @db_session
     def ui_acc(self):
 
@@ -287,6 +328,25 @@ class PartsWindow(QMainWindow):
         p.sewing_machines.remove(map(lambda x: SewingMachine[x], self.machine_id_del))
         p.sewing_machines.add(map(lambda x: SewingMachine[x], self.machine_id_new))
 
+        value_site = {
+            "name": self.le_site_name.text(),
+            "categories": self.le_site_categoryes.text(),
+            "main_category": self.le_site_main_categoy.text(),
+            "price": self.le_site_price.text(),
+            "in_warehouse": self.cb_warehouse.isChecked(),
+            "seo_keyword": self.le_url.text(),
+            "description": self.pt_description.toPlainText(),
+            "title": self.le_title.text(),
+            "meta_description": self.le_seo_descriotion.text(),
+            "h1": self.le_h1.text(),
+            "parts": p
+        }
+        if p.site_info.id:
+            ps = PartsSiteInfo[p.site_info.id]
+            ps.set(**value_site)
+        else:
+            ps = PartsSiteInfo(**value_site)
+
         flush()
 
         if self.photo_del or self.photo_dir:
@@ -301,7 +361,8 @@ class PartsWindow(QMainWindow):
                     if self.photo_dir != path_photo:
                         shutil.copy2(self.photo_dir, path_photo)
 
-        self.main.ui_update_table()
+        if self.main:
+            self.main.ui_update_table()
         self.close()
         self.destroy()
 
@@ -770,3 +831,4 @@ class PartsCatalog(QMainWindow):
             item.addChild(self.search(id, tree_class))  # Добавляем детей этой ветви!
 
         return item
+
