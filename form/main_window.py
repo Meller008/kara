@@ -11,7 +11,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         loadUi(getcwd() + '/ui/main_window.ui', self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
-        # self.mdi.setBackground(QBrush(QImage(getcwd() + "/images/logo_mdi.png")))
+        self.mdi.setBackground(QBrush(QImage(getcwd() + "/images/logo_mdi.png")))
 
         self.tabWidget.setTabIcon(0, QIcon(getcwd() + "/images/supply.ico"))
         self.tabWidget.setTabIcon(1, QIcon(getcwd() + "/images/order.ico"))

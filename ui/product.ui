@@ -638,8 +638,8 @@
    <slot>ui_view_machine()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>34</x>
-     <y>266</y>
+     <x>38</x>
+     <y>298</y>
     </hint>
     <hint type="destinationlabel">
      <x>-51</x>
@@ -654,8 +654,8 @@
    <slot>ui_del_machine()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>107</x>
-     <y>250</y>
+     <x>125</x>
+     <y>298</y>
     </hint>
     <hint type="destinationlabel">
      <x>-42</x>
@@ -670,8 +670,8 @@
    <slot>ui_acc()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>396</x>
-     <y>416</y>
+     <x>400</x>
+     <y>485</y>
     </hint>
     <hint type="destinationlabel">
      <x>462</x>
@@ -686,8 +686,8 @@
    <slot>ui_can()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>477</x>
-     <y>416</y>
+     <x>481</x>
+     <y>485</y>
     </hint>
     <hint type="destinationlabel">
      <x>553</x>
@@ -724,6 +724,70 @@
     <hint type="destinationlabel">
      <x>241</x>
      <y>243</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_view_manufacturer()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>264</x>
+     <y>190</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>301</x>
+     <y>-78</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton_6</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_web_photo()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>130</x>
+     <y>142</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>129</x>
+     <y>-85</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton_5</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_change_photo()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>188</x>
+     <y>142</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>198</x>
+     <y>-85</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_del_photo()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>245</x>
+     <y>146</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>235</x>
+     <y>-110</y>
     </hint>
    </hints>
   </connection>

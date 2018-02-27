@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1063</width>
+    <width>1198</width>
     <height>693</height>
    </rect>
   </property>
@@ -31,7 +31,7 @@
      <number>2</number>
     </property>
     <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,4,2">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,5,2">
       <property name="spacing">
        <number>2</number>
       </property>
@@ -445,7 +445,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_6" stretch="0,0,0,0">
+       <layout class="QVBoxLayout" name="verticalLayout_6" stretch="0,0,0,2">
         <item>
          <widget class="QLabel" name="label_21">
           <property name="text">
@@ -483,7 +483,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QGridLayout" name="gridLayout_14">
+         <layout class="QGridLayout" name="gridLayout_14" rowstretch="0,1" columnstretch="0,0">
           <item row="0" column="0">
            <widget class="QListWidget" name="lw_manufacturer_machine">
             <property name="font">
@@ -733,7 +733,7 @@
    <sender>le_manufacturer_name</sender>
    <signal>textEdited(QString)</signal>
    <receiver>MainWindow</receiver>
-   <slot>ui_change_manufacturer_machine()</slot>
+   <slot>ui_change_manufacturer_name()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>579</x>

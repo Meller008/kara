@@ -36,11 +36,10 @@ class SewingMachineList(table.TableList):
 
         # сам запрос
         self.query = """SELECT sewingmachine.id, sewingmachine.name, manufacturersewingmachine.name, GROUP_CONCAT(typesewingmachine.name)
-                        FROM typesewingmachine
-                          LEFT JOIN sewingmachine_typesewingmachine ON typesewingmachine.id = sewingmachine_typesewingmachine.typesewingmachine
-                          LEFT JOIN sewingmachine ON sewingmachine_typesewingmachine.sewingmachine = sewingmachine.id
-                          LEFT JOIN manufacturersewingmachine ON sewingmachine.manufacturer = manufacturersewingmachine.id
-                          GROUP BY sewingmachine"""
+                          FROM sewingmachine LEFT JOIN sewingmachine_typesewingmachine ON sewingmachine.id = sewingmachine_typesewingmachine.sewingmachine
+                            LEFT JOIN typesewingmachine ON sewingmachine_typesewingmachine.typesewingmachine = typesewingmachine.id
+                            LEFT JOIN manufacturersewingmachine ON sewingmachine.manufacturer = manufacturersewingmachine.id
+                         GROUP BY sewingmachine.id ORDER BY sewingmachine.manufacturer"""
 
     def ui_add_table_item(self):  # Добавить предмет
         self.machine_window = SewingMachineBrows(self)

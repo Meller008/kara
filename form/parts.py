@@ -341,7 +341,7 @@ class PartsWindow(QMainWindow):
             "h1": self.le_h1.text(),
             "parts": p
         }
-        if p.site_info.id:
+        if p.site_info:
             ps = PartsSiteInfo[p.site_info.id]
             ps.set(**value_site)
         else:
@@ -349,6 +349,7 @@ class PartsWindow(QMainWindow):
 
         flush()
 
+        self.id = p.id
         if self.photo_del or self.photo_dir:
             path_photo = self.inspection_path(p.id)
             if path_photo:
@@ -413,7 +414,6 @@ class PartsWindow(QMainWindow):
         self.le_note.setText(part_copy.note)
         self.le_manufacturer.setText(part_copy.manufacturer.name)
         self.le_manufacturer.setWhatsThis(str(part_copy.manufacturer.id))
-        self.le_price.setText(str(part_copy.price))
 
         for machine in part_copy.sewing_machines:
             self.of_select_sewing_machine(machine.id)
@@ -473,11 +473,11 @@ class PartsCatalog(QMainWindow):
     @db_session
     def start(self):
         self.tw_machine.horizontalHeader().resizeSection(0, 50)
-        self.tw_machine.horizontalHeader().resizeSection(1, 50)
+        self.tw_machine.horizontalHeader().resizeSection(1, 65)
         self.tw_machine.horizontalHeader().resizeSection(2, 115)
 
         self.tw_poduct.horizontalHeader().resizeSection(0, 50)
-        self.tw_poduct.horizontalHeader().resizeSection(1, 150)
+        self.tw_poduct.horizontalHeader().resizeSection(1, 220)
         self.tw_poduct.horizontalHeader().resizeSection(2, 60)
         self.tw_poduct.horizontalHeader().resizeSection(3, 60)
         self.tw_poduct.horizontalHeader().resizeSection(4, 185)
@@ -617,6 +617,7 @@ class PartsCatalog(QMainWindow):
         self.filter_machine()
         self.filter_product()
 
+    @db_session
     def ui_dc_warehouse(self, item):
         if self.main and self.select_warehouse:
             id = item.data(5)
@@ -752,7 +753,7 @@ class PartsCatalog(QMainWindow):
             self.filter_name = None
 
         elif self.filter_manufacturer_name:
-            query = query.filter(lambda p: self.filter_manufacturer_name in p.vendor_name)
+            query = query.filter(lambda p: str(self.filter_manufacturer_name) in p.vendor_name)
             self.filter_manufacturer_name = None
         else:
             if self.filter_type_product_id:

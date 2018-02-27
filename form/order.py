@@ -25,7 +25,7 @@ COLOR_WINDOW = "188, 143, 143"
 class OrderList(table.TableList):
     def set_settings(self):
         self.setWindowTitle("Заказы")  # Имя окна
-        self.resize(600, 270)
+        self.resize(740, 350)
         self.toolBar.setStyleSheet("background-color: rgb(%s);" % COLOR_WINDOW)  # Цвет бара
 
         self.pb_copy.deleteLater()
@@ -33,12 +33,12 @@ class OrderList(table.TableList):
         self.pb_filter.deleteLater()
 
         # Названия колонк (Имя, Длинна)
-        self.table_header_name = (("№", 30), ("Клиент", 140), ("Дата заказа", 80), ("Оплата", 140), ("Позиций", 55), ("Сумма", 75))
+        self.table_header_name = (("№", 30), ("Клиент", 140), ("Дата заказа", 80), ("Оплата", 140), ("Позиций", 55), ("Сумма", 75), ("Заметка", 170))
 
         self.item = Order  # Класс который будем выводить! Без скобок!
 
         # сам запрос
-        self.query = select((o.id, o.id, o.client.name, o.date, o.payment_method.name, o.value_position, o.sum_all) for o in Order).order_by(-1)
+        self.query = select((o.id, o.id, o.client.name, o.date, o.payment_method.name, o.value_position, o.sum_all, o.note) for o in Order).order_by(-1)
 
     def ui_add_table_item(self):  # Добавить предмет
         self.add_supply = OrderBrows(self)
@@ -416,12 +416,12 @@ class OrderBrows(QMainWindow):
             profit_sum += position.profit_sum
 
         if position_sum:
-            discount_sum = (position_sum / 100) * discount_percent
+            discount_sum = round((position_sum / 100) * discount_percent, 2)
         else:
             discount_sum = 0
 
-        all_sum = (position_sum - discount_sum) + shipping_sum
-        profit_sum = profit_sum - discount_sum
+        all_sum = round((position_sum - discount_sum) + shipping_sum, 2)
+        profit_sum = round(profit_sum - discount_sum, 2)
 
         self.le_position_sum.setText(str(position_sum))
         self.le_discount_sum.setText(str(discount_sum))
@@ -551,8 +551,8 @@ class OrderBrows(QMainWindow):
         # заполнение середины
         sheet["G17"] = self.le_id.text()
         sheet["T13"] = self.le_id.text()
-        sheet["I17"] = self.de_date.date().toString("dd.MM.yyyy")
-        sheet["T14"] = self.de_date.date().toString("dd.MM.yyyy")
+        sheet["I17"] = self.de_date_shipping.date().toString("dd.MM.yyyy")
+        sheet["T14"] = self.de_date_shipping.date().toString("dd.MM.yyyy")
         sheet["G17"].border = border_all_big
         sheet["I17"].border = border_all_big
 
@@ -828,7 +828,7 @@ class OrderPositionBrows(QDialog):
 
         # Проверим список на заполненость! Кроме первого значения. Там может быть None если это новая позиция
         for item in tuple(self.acc_item)[1:]:
-            if not item:
+            if item == "" or item is False or item is None:
                 QMessageBox.information(self, "Ошибка заполнения", "Что то не заполнено", QMessageBox.Ok)
                 return False
 
@@ -852,11 +852,15 @@ class OrderPositionBrows(QDialog):
         sum = str_to_decimal(self.le_sum.text())
         cost_sum = str_to_decimal(self.le_cost_sum.text())
 
-        if value and sum:
+        if value and isinstance(sum, Decimal):
             self.le_price.setText(str(round(sum / value, 2)))
+        else:
+            self.le_price.setText("")
 
-        if value and cost_sum:
+        if isinstance(sum, Decimal) and isinstance(cost_sum, Decimal):
             self.le_cost_price.setText(str(round(sum / cost_sum, 2)))
+        else:
+            self.le_cost_price.setText("")
 
         self.calc_profit()
 
@@ -865,11 +869,15 @@ class OrderPositionBrows(QDialog):
         price = str_to_decimal(self.le_price.text())
         cost_price = str_to_decimal(self.le_cost_price.text())
 
-        if value and price:
+        if value and isinstance(price, Decimal):
             self.le_sum.setText(str(round(value * price, 2)))
+        else:
+            self.le_sum.setText("")
 
-        if value and cost_price:
+        if value and isinstance(cost_price, Decimal):
             self.le_cost_sum.setText(str(round(value * cost_price, 2)))
+        else:
+            self.le_cost_sum.setText("")
 
         self.calc_profit()
 
@@ -880,10 +888,10 @@ class OrderPositionBrows(QDialog):
         sum = str_to_decimal(self.le_sum.text())
         cost_sum = str_to_decimal(self.le_cost_sum.text())
 
-        if price and cost_price:
+        if isinstance(price, Decimal) and isinstance(cost_price, Decimal):
             self.le_price_profit.setText(str(round(price - cost_price, 2)))
 
-        if sum and cost_sum:
+        if isinstance(sum, Decimal) and isinstance(cost_sum, Decimal):
             self.le_profit_sum.setText(str(round(sum - cost_sum, 2)))
 
     @db_session
