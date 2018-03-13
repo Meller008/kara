@@ -41,6 +41,7 @@ def translate(name):
 
         #del-symbols
         (u" ", u"_"),
+        (u"-", u""),
         (u"ъ", u""),
         (u"ь", u""),
         (u"(", u""),

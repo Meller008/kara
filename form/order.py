@@ -546,7 +546,7 @@ class OrderBrows(QMainWindow):
         sheet["C8"] = client_text
         sheet["C12"] = client_text
 
-        sheet["C14"] = "Счета № %s от %s" % (self.le_id.text(), self.de_date.date().toString("dd.MM.yyyy"))
+        sheet["C14"] = "Счет № %s от %s" % (self.le_id.text(), self.de_date.date().toString("dd.MM.yyyy"))
 
         # заполнение середины
         sheet["G17"] = self.le_id.text()

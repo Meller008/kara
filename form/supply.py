@@ -137,6 +137,8 @@ class SupplyBrows(QMainWindow):
                         item.setData(5, position.id)
                     self.tw_position.setItem(self.tw_position.rowCount()-1, i, item)
 
+            self.sell_sum()
+
     def ui_view_vendor(self):  # Открываем окно постаыщиков
         self.vendor = vendor.VendorList(self, dc_select=True)
         self.vendor.setWindowModality(Qt.ApplicationModal)
@@ -310,7 +312,8 @@ class SupplyBrows(QMainWindow):
         self.calc_way = SupplyCalcInquiry()
         self.calc_way.setModal(True)
         self.calc_way.show()
-        if self.calc_way.exec_() < 1:
+        select_calc_way = self.calc_way.exec_()
+        if select_calc_way < 1:
             return False
 
         self.PositionOrder = namedtuple('PositionOrder', """sql_id parts_id parts value warehouse_value price_vendor price_ru 
@@ -344,7 +347,10 @@ class SupplyBrows(QMainWindow):
             sum_ru += position.sum_ru
 
         # расчитываем затраты
-        cost_percent = round(100 / (sum_ru / sum_cost), 2)
+        if sum_cost:
+            cost_percent = round(100 / (sum_ru / sum_cost), 2)
+        else:
+            cost_percent = round(100 / sum_ru, 2)
         sum_all_supply = sum_ru + sum_cost
         value_position = self.tw_position.rowCount()
 
@@ -361,7 +367,7 @@ class SupplyBrows(QMainWindow):
 
             new_price_cost = round(((position.price_ru / 100) * cost_percent) + position.price_ru, 2)  # новая себестоимость
 
-            if self.calc_way == 2:  # Если пересчитываем процент наценки
+            if select_calc_way == 2:  # Если пересчитываем процент наценки
                 position = self.PositionOrder(position.sql_id,
                                               position.parts_id,
                                               position.parts,
@@ -374,9 +380,10 @@ class SupplyBrows(QMainWindow):
                                               position.price_sell,
                                               round(position.price_sell - new_price_cost, 2),
                                               position.sum_ru,
-                                              round(new_price_cost * position.value, 2))
+                                              round(new_price_cost * position.value, 2),
+                                              position.article)
 
-            elif self.calc_way == 1:  # Если пересчитываем цену
+            elif select_calc_way == 1:  # Если пересчитываем цену
 
                 new_price_sell = round(((new_price_cost / 100) * position.percent_markup) + new_price_cost, 2)
 
@@ -392,7 +399,8 @@ class SupplyBrows(QMainWindow):
                                               new_price_sell,
                                               round(new_price_sell - new_price_cost, 2),
                                               position.sum_ru,
-                                              round(new_price_cost * position.value, 2))
+                                              round(new_price_cost * position.value, 2),
+                                              position.article)
 
             # Вставляем пересчитаный кортеж в строку
             self.tw_position.item(row, 0).setData(5, position)
@@ -413,6 +421,7 @@ class SupplyBrows(QMainWindow):
                 self.tw_position.setItem(row, col, item)
                 col += 1
 
+        self.sell_sum()
         self.pb_acc.setEnabled(True)
         self.pb_calc.setStyleSheet("background-color: rgb(85, 255, 0);")
 
@@ -494,6 +503,18 @@ class SupplyBrows(QMainWindow):
     def ui_can(self):
         self.close()
         self.destroy()
+
+    def sell_sum(self):
+        # Считаем сумму продажи заказа
+        sum_sell = 0
+        for row in range(self.tw_position.rowCount()):
+            value = str_to_decimal(self.tw_position.item(row, 2).text())
+            price = str_to_decimal(self.tw_position.item(row, 8).text())
+
+
+            sum_sell += value * price
+
+        self.le_sell_sum.setText(str(sum_sell))
 
     @db_session
     def of_select_vendor(self, vendor_id):  # Вставляем поставщика + его города и способы доставки и оплаты

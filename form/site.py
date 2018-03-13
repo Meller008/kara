@@ -4,8 +4,8 @@ from PyQt5.uic import loadUi
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, QDateTime
 from pony.orm import *
-from my_class.orm_class import Parts, SupplyPosition
-from form import parts
+from my_class.orm_class import Parts, SupplyPosition, Supply
+from form import parts, supply
 from function.translate import translate
 from function.str_to import str_to_decimal
 import openpyxl
@@ -75,6 +75,11 @@ class SiteExportProduct(QMainWindow):
             item = QTableWidgetItem(str(parts.site_info.h1))
             self.tw_position.setItem(row, 4, item)
 
+    def ui_add_position_is_supply(self):
+        self.supply_window = supply.SupplyList(self, dc_select=True)
+        self.supply_window.setWindowModality(Qt.ApplicationModal)
+        self.supply_window.show()
+
     @db_session
     def ui_export(self):
         if not self.le_path.text():
@@ -133,9 +138,9 @@ class SiteExportProduct(QMainWindow):
             sheet["P%s" % select_row_excel] = "yes"
             sheet["Q%s" % select_row_excel] = str(_parts.site_info.price)
             sheet["R%s" % select_row_excel] = 0
-            sheet["S%s" % select_row_excel] = date_now.toString("yyyy-dd-MM HH:mm:ss")
-            sheet["T%s" % select_row_excel] = date_now.toString("yyyy-dd-MM HH:mm:ss")
-            sheet["U%s" % select_row_excel] = date_now.toString("yyyy-dd-MM")
+            sheet["S%s" % select_row_excel] = date_now.toString("yyyy-MM-dd HH:mm:ss")
+            sheet["T%s" % select_row_excel] = date_now.toString("yyyy-MM-dd HH:mm:ss")
+            sheet["U%s" % select_row_excel] = date_now.toString("yyyy-MM-dd")
             sheet["V%s" % select_row_excel] = 0
             sheet["W%s" % select_row_excel] = "кг"
             sheet["X%s" % select_row_excel] = 0
@@ -177,8 +182,10 @@ class SiteExportProduct(QMainWindow):
             _parts.site_info.name = _parts.name
             _parts.site_info.title = _parts.name + SITE_ADD_TEXT
             _parts.site_info.h1 = _parts.name
-            _parts.site_info.seo_keyword = translate(_parts.name)
             _parts.site_info.meta_description = _parts.name + SITE_ADD_TEXT
+
+            if not _parts.site_info.seo_keyword:  # Создаем URL только если его нет
+                _parts.site_info.seo_keyword = translate(_parts.name)
 
             for_text = ""
             if _parts.note:
@@ -245,3 +252,25 @@ class SiteExportProduct(QMainWindow):
 
         item = QTableWidgetItem(str(parts.site_info.h1))
         self.tw_position.setItem(row, 4, item)
+
+    @db_session
+    def of_select_supply(self, _id):
+        supply = Supply[_id]
+        for parts in supply.position.parts:
+            row = self.tw_position.rowCount()
+            self.tw_position.insertRow(self.tw_position.rowCount())
+
+            item = QTableWidgetItem(str(parts.id))
+            self.tw_position.setItem(row, 0, item)
+
+            item = QTableWidgetItem(str(parts.name))
+            self.tw_position.setItem(row, 1, item)
+
+            item = QTableWidgetItem(str(parts.site_info.seo_keyword))
+            self.tw_position.setItem(row, 2, item)
+
+            item = QTableWidgetItem(str(parts.site_info.title))
+            self.tw_position.setItem(row, 3, item)
+
+            item = QTableWidgetItem(str(parts.site_info.h1))
+            self.tw_position.setItem(row, 4, item)

@@ -51,6 +51,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QToolButton" name="toolButton_5">
+          <property name="text">
+           <string>Добавить из заказа</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QToolButton" name="toolButton_2">
           <property name="text">
            <string>Убрать</string>
@@ -244,8 +251,8 @@
    <slot>ui_file_brows()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>408</x>
-     <y>18</y>
+     <x>597</x>
+     <y>22</y>
     </hint>
     <hint type="destinationlabel">
      <x>307</x>
@@ -276,8 +283,8 @@
    <slot>ui_dell_position()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>102</x>
-     <y>31</y>
+     <x>233</x>
+     <y>48</y>
     </hint>
     <hint type="destinationlabel">
      <x>108</x>
@@ -292,8 +299,8 @@
    <slot>ui_add_all_position()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>150</x>
-     <y>33</y>
+     <x>318</x>
+     <y>48</y>
     </hint>
     <hint type="destinationlabel">
      <x>154</x>
@@ -308,8 +315,8 @@
    <slot>ui_export()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>485</x>
-     <y>17</y>
+     <x>674</x>
+     <y>19</y>
     </hint>
     <hint type="destinationlabel">
      <x>386</x>
@@ -324,8 +331,8 @@
    <slot>ui_checking_position()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>644</x>
-     <y>16</y>
+     <x>833</x>
+     <y>18</y>
     </hint>
     <hint type="destinationlabel">
      <x>384</x>
@@ -356,12 +363,28 @@
    <slot>ui_generation()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>513</x>
-     <y>15</y>
+     <x>756</x>
+     <y>17</y>
     </hint>
     <hint type="destinationlabel">
      <x>515</x>
      <y>-45</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButton_5</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ui_add_position_is_supply()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>124</x>
+     <y>40</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>196</x>
+     <y>-57</y>
     </hint>
    </hints>
   </connection>
@@ -375,5 +398,6 @@
   <slot>ui_checking_position()</slot>
   <slot>ui_open_product()</slot>
   <slot>ui_generation()</slot>
+  <slot>ui_add_position_is_supply()</slot>
  </slots>
 </ui>
