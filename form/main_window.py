@@ -1,4 +1,5 @@
 from os import getcwd
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow, QMdiSubWindow
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QIcon, QBrush, QImage
@@ -7,7 +8,7 @@ from form import country, shipping, payment, vendor, sewing_machine, parts, supp
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, win_arg):
         super(MainWindow, self).__init__()
         loadUi(getcwd() + '/ui/main_window.ui', self)
         self.setWindowIcon(QIcon(getcwd() + "/images/icon.ico"))
@@ -19,6 +20,12 @@ class MainWindow(QMainWindow):
         self.tabWidget.setTabIcon(3, QIcon(getcwd() + "/images/machine.ico"))
         self.tabWidget.setTabIcon(4, QIcon(getcwd() + "/images/warehouse.ico"))
         self.tabWidget.setTabIcon(5, QIcon(getcwd() + "/images/other_tab.ico"))
+
+        if "-C" in win_arg:
+            self.arg_C()
+
+        if "-FS" in win_arg:
+            self.arg_FS()
 
         self.show()
 
@@ -189,3 +196,10 @@ class MainWindow(QMainWindow):
         self.mdi.addSubWindow(self.sub_site_export)
         self.sub_site_export.resize(self.site_export.size())
         self.sub_site_export.show()
+
+    def arg_C(self):
+        self.tabWidget.setEnabled(False)
+        self.ui_view_parts_catalog()
+
+    def arg_FS(self):
+        self.setWindowState(Qt.WindowMaximized)
