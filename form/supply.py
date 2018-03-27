@@ -13,7 +13,8 @@ from function.str_to import str_to_decimal
 
 COLOR_WINDOW_SUPPLY = "204, 255, 0"
 COLOR_WINDOW_COST_OTHER = "153, 153, 51"
-PHOTO_DIR = getcwd() + "/photo/"
+#PHOTO_DIR = getcwd() + "/photo/"
+PHOTO_DIR = "//SERVMYSQL/kara_photo"
 
 
 class SupplyList(table.TableList):

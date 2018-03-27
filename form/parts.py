@@ -16,7 +16,8 @@ from function.str_to import str_to_decimal
 
 COLOR_WINDOW_PARTS = "0, 102, 102"
 COLOR_WINDOW_PARTS_MANUFACTURER = "204, 255, 255"
-PHOTO_DIR = getcwd() + "/photo/"
+#PHOTO_DIR = getcwd() + "/photo/"
+PHOTO_DIR = "//SERVMYSQL/kara_photo"
 SITE_ADD_TEXT = ", купить в магазине КАРА"
 
 db = Database()
