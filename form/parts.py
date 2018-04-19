@@ -62,6 +62,58 @@ class PartsList(tree.TreeList):
         self.toolBar.addWidget(dummy)
         self.toolBar.addWidget(self.le_fast_filter)
 
+    @db_session
+    def ui_add_tree_item(self):
+        info = tree.ChangeTreeItem()
+        info.set_settings(self.set_new_win_tree)
+        if info.exec() == 0:
+            return False
+
+        pos = info.le_position.text() or None
+
+        if info.rb_new.isChecked():
+            parent_id = 0
+        else:
+            try:
+                parent_id = self.tree_widget.selectedItems()[0].data(0, 5)
+            except:
+                QMessageBox.critical(self, "Ошибка добавления", "Выделите элемент в который вы хотите вставить элемент", QMessageBox.Ok)
+                return False
+
+        self.tree_orm(name=info.le_name.text(), position=pos, parent=parent_id, site_id=info.le_site_id.text())
+        commit()
+
+        self.set_tree_info()
+
+    @db_session
+    def ui_change_tree_item(self):
+
+        try:
+            parent_name = self.tree_widget.selectedItems()[0].text(0)
+            id_select = self.tree_widget.selectedItems()[0].data(0, 5)
+        except:
+            QMessageBox.critical(self, "Ошибка изменения", "Выделите элемент который хотите изменить", QMessageBox.Ok)
+            return False
+
+        tree_i = self.tree_orm[id_select]
+
+        info = tree.ChangeTreeItem()
+        info.set_settings(self.set_new_win_tree)
+        info.rb_old.close()
+        info.rb_new.close()
+        info.le_name.setText(parent_name)
+        info.le_site_id.setText(tree_i.site_id)
+        info.le_position.setText(str(tree_i.position or ""))
+        if info.exec() == 0:
+            return False
+
+        tree_i.name = info.le_name.text()
+        tree_i.position = info.le_position.text() or None
+        tree_i.site_id = info.le_site_id.text()
+        commit()
+
+        self.set_tree_info()
+
     def ui_add_table_item(self):  # Добавить предмет
         try:
             tree_id = self.tree_widget.selectedItems()[0].data(0, 5)

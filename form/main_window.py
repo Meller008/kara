@@ -197,6 +197,14 @@ class MainWindow(QMainWindow):
         self.sub_site_export.resize(self.site_export.size())
         self.sub_site_export.show()
 
+    def ui_view_photo_site(self):
+        self.photo_site = site.ExportPhotoSite()
+        # self.sub_photo_site = QMdiSubWindow()
+        # self.sub_photo_site.setWidget(self.photo_site)
+        # self.mdi.addSubWindow(self.sub_photo_site)
+        # self.sub_photo_site.resize(self.photo_site.size())
+        # self.sub_photo_site.show()
+
     def arg_C(self):
         self.tabWidget.setEnabled(False)
         self.ui_view_parts_catalog()

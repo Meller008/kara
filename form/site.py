@@ -1,17 +1,20 @@
-from os import getcwd, path as pathh
+from os import getcwd, path as pathh, walk
+import shutil
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QFileDialog, QMessageBox
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, QDateTime
 from pony.orm import *
-from my_class.orm_class import Parts, SupplyPosition, Supply
+from my_class.orm_class import Parts, SupplyPosition, Supply, PartsTree
 from form import parts, supply
 from function.translate import translate
-from function.str_to import str_to_decimal
 import openpyxl
+from treelib import Tree
 
 IGNORE_CATEGORIES = 59
 SITE_ADD_TEXT = ", купить в магазине КАРА"
+PHOTO_DIR = "//SERVMYSQL/kara_photo"
+DELL_CATEGORY_GENERATION = ['59', ]
 
 
 class SiteExportProduct(QMainWindow):
@@ -120,17 +123,19 @@ class SiteExportProduct(QMainWindow):
             if excel_article.get(_parts.id):  # Если такой артикул уже есть
                 select_row_excel = excel_article.get(_parts.id)
                 id_select = sheet["A%s" % select_row_excel].value
+                flag_new = False
             else:
                 max_id += 1
                 select_row_excel = row_excel
                 id_select = max_id
                 row_excel += 1
+                flag_new = True
 
             # Запишем товар в фаил
             sheet["A%s" % select_row_excel] = id_select
             sheet["B%s" % select_row_excel] = _parts.site_info.name
-            sheet["C%s" % select_row_excel] = _parts.site_info.main_category
-            sheet["D%s" % select_row_excel] = _parts.site_info.categories
+            sheet["C%s" % select_row_excel] = _parts.site_info.categories
+            sheet["D%s" % select_row_excel] = _parts.site_info.main_category
             sheet["E%s" % select_row_excel] = str(_parts.id).zfill(5)
             sheet["L%s" % select_row_excel] = 10
             sheet["M%s" % select_row_excel] = str(_parts.id).zfill(5)
@@ -138,9 +143,10 @@ class SiteExportProduct(QMainWindow):
             sheet["P%s" % select_row_excel] = "yes"
             sheet["Q%s" % select_row_excel] = str(_parts.site_info.price)
             sheet["R%s" % select_row_excel] = 0
-            sheet["S%s" % select_row_excel] = date_now.toString("yyyy-MM-dd HH:mm:ss")
-            sheet["T%s" % select_row_excel] = date_now.toString("yyyy-MM-dd HH:mm:ss")
-            sheet["U%s" % select_row_excel] = date_now.toString("yyyy-MM-dd")
+            if flag_new:
+                sheet["S%s" % select_row_excel] = date_now.toString("yyyy-MM-dd HH:mm:ss")
+                sheet["T%s" % select_row_excel] = date_now.toString("yyyy-MM-dd HH:mm:ss")
+                sheet["U%s" % select_row_excel] = date_now.toString("yyyy-MM-dd")
             sheet["V%s" % select_row_excel] = 0
             sheet["W%s" % select_row_excel] = "кг"
             sheet["X%s" % select_row_excel] = 0
@@ -155,7 +161,10 @@ class SiteExportProduct(QMainWindow):
             sheet["AG%s" % select_row_excel] = _parts.site_info.meta_description
             sheet["AH%s" % select_row_excel] = _parts.site_info.h1
             sheet["AI%s" % select_row_excel] = ""
-            sheet["AJ%s" % select_row_excel] = 7
+            if _parts.site_info.in_warehouse:
+                sheet["AJ%s" % select_row_excel] = 7
+            else:
+                sheet["AJ%s" % select_row_excel] = 8
             sheet["AK%s" % select_row_excel] = 0
             sheet["AO%s" % select_row_excel] = 1
             sheet["AP%s" % select_row_excel] = "false"
@@ -167,6 +176,15 @@ class SiteExportProduct(QMainWindow):
 
     @db_session
     def ui_generation(self):
+
+        # Создаем дерево в памяти
+        self.tree_parts = Tree()
+        self.tree_parts.create_node("main", 0)
+        for tree_item in PartsTree.select().order_by(PartsTree.parent, PartsTree.position)[:]:
+            self.tree_parts.create_node(tree_item.name, tree_item.id, parent=tree_item.parent, data=tree_item.site_id)
+        else:
+            self.tree_parts.create_node("Показать всё", "all", parent=0, data="all")
+
         for row in range(self.tw_position.rowCount()):
             _id = int(self.tw_position.item(row, 0).text())
             _parts = Parts[_id]
@@ -175,7 +193,7 @@ class SiteExportProduct(QMainWindow):
             if not self.rb_all.isChecked:
                 if _parts.site_info.id:
                     if _parts.site_info.name or _parts.site_info.in_warehouse or _parts.site_info.seo_keyword \
-                            or _parts.site_info.title or _parts.site_info.meta_description or _parts.site_info.h1 \
+                            or _parts.site_info.title or _parts.site_info.meta_description or _parts.site_info.h1\
                             or _parts.site_info.categories or _parts.site_info.main_category:
                         continue
 
@@ -183,6 +201,27 @@ class SiteExportProduct(QMainWindow):
             _parts.site_info.title = _parts.name + SITE_ADD_TEXT
             _parts.site_info.h1 = _parts.name
             _parts.site_info.meta_description = _parts.name + SITE_ADD_TEXT
+            _parts.site_info.main_category = _parts.tree.site_id
+
+            # Переберем категории к которым он принадлежит
+            flag_tree_id = _parts.tree.id
+            categories = []
+            while flag_tree_id != 0:
+                categories.append(self.tree_parts[flag_tree_id].data)
+                flag_tree_id = self.tree_parts[flag_tree_id].bpointer
+
+            # Удалим корневые категории
+            for i in DELL_CATEGORY_GENERATION:
+                try:
+                    categories.remove(i)
+                except:
+                    pass
+
+            # отсрортируем категории и соберем их в строку!
+            categories.sort(key=lambda i: int(i))
+            categories_txt = ','.join(map(str, categories))
+
+            _parts.site_info.categories = categories_txt
 
             if not _parts.site_info.seo_keyword:  # Создаем URL только если его нет
                 _parts.site_info.seo_keyword = translate(_parts.name)
@@ -218,7 +257,7 @@ class SiteExportProduct(QMainWindow):
 
                 if self.cb_view_none.isChecked():
                     if p.site_info.id:
-                        if not p.site_info.name or not p.site_info.in_warehouse or not p.site_info.seo_keyword \
+                        if not p.site_info.name or not p.site_info.seo_keyword \
                                 or not p.site_info.title or not p.site_info.meta_description or not p.site_info.h1 \
                                 or not p.site_info.categories or not p.site_info.main_category:
                             self.tw_position.setCurrentCell(row, 0)
@@ -274,3 +313,20 @@ class SiteExportProduct(QMainWindow):
 
             item = QTableWidgetItem(str(parts.site_info.h1))
             self.tw_position.setItem(row, 4, item)
+
+
+class ExportPhotoSite:
+    def __init__(self):
+        dir = self.get_directory()
+        if dir:
+            self.export_photo(dir)
+
+    def get_directory(self):
+        path = QFileDialog.getExistingDirectory(None, "Сохранение", pathh.expanduser("~/Desktop/"))
+        return path
+
+    def export_photo(self, dir):
+        for root, dirs, files in walk(PHOTO_DIR):
+            for nm in files:
+                shutil.copy2(pathh.join(root, nm), dir)
+

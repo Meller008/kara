@@ -114,6 +114,7 @@ class PartsTree(db.Entity):
     name = Required(str)
     parent = Required(int)
     position = Optional(int, default=20)
+    site_id = Optional(str)
     parts = Set(Parts, cascade_delete=False)
 
 
@@ -252,5 +253,5 @@ class PartsSiteInfo(db.Entity):
     h1 = Optional(str)
     parts = Optional(Parts)
 
-sql_debug(True)
+#sql_debug(True)
 db.generate_mapping(create_tables=True, check_tables=True)
