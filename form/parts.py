@@ -13,6 +13,7 @@ from form import sewing_machine
 from form.templates import tree, list
 from function.translate import translate
 from function.str_to import str_to_decimal
+from PIL import Image
 
 COLOR_WINDOW_PARTS = "0, 102, 102"
 COLOR_WINDOW_PARTS_MANUFACTURER = "204, 255, 255"
@@ -287,7 +288,7 @@ class PartsWindow(QMainWindow):
             self.photo_del = False
 
     def ui_change_photo(self):
-        dir = QFileDialog.getOpenFileNames(self, "Выбор фото", "", "*.jpg")[0]
+        dir = QFileDialog.getOpenFileNames(self, "Выбор фото", "", "*.jpg *.png")[0]
         if not dir:
             return False
 
@@ -407,13 +408,18 @@ class PartsWindow(QMainWindow):
             path_photo = self.inspection_path(p.id)
             if path_photo:
                 if self.photo_del:
-                    path_photo += "/%s.jpg" % self.id
-                    remove(path_photo)
+                    try:
+                        path_photo += "/%s.jpg" % self.id
+                        remove(path_photo)
+                    except:
+                        pass
 
                 if self.photo_dir:
                     path_photo += "/%s.jpg" % self.id
                     if self.photo_dir != path_photo:
-                        shutil.copy2(self.photo_dir, path_photo)
+                        im = Image.open(self.photo_dir)
+                        im.save(path_photo)
+                        # shutil.copy2(self.photo_dir, path_photo)
 
         if self.main:
             self.main.ui_update_table()

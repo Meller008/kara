@@ -33,7 +33,7 @@ class SupplyList(table.TableList):
         self.item = Supply  # Класс который будем выводить! Без скобок!
 
         # сам запрос
-        self.query = select((s.id, s.id, s.vendor.name, s.date_order, s.date_shipping, s.value_position, s.all_sum) for s in Supply)
+        self.query = select((s.id, s.id, s.vendor.name, s.date_order, s.date_shipping, s.value_position, s.all_sum) for s in Supply).order_by(-1)
 
     def ui_add_table_item(self):  # Добавить предмет
         self.add_supply = SupplyBrows(self)
@@ -466,7 +466,7 @@ class SupplyBrows(QMainWindow):
             if position.sql_id is None:
                 supply.cost_other.add(SupplyCostOther(**value))
             else:
-                CostOther[position.sql_id].set(**value)
+                SupplyCostOther[position.sql_id].set(**value)
 
         for row in range(self.tw_position.rowCount()):  # Добавим или обновим позиции
             position = self.tw_position.item(row, 0).data(5)
